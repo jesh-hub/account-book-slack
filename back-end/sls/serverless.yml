@@ -10,6 +10,7 @@ provider:
   environment:
     slackToken: ${self:custom.environment.slackToken}
     channelId: ${self:custom.environment.channelId}
+    botId: ${self:custom.environment.botId}
 #  stage: dev
 
 custom:
