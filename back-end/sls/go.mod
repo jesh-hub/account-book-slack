@@ -1,4 +1,4 @@
-module github.com/account-book-slack/back-end
+module github.com/jesh-hub/account-book-slack/back-end
 
 go 1.18
 
