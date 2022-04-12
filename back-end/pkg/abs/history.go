@@ -2,6 +2,7 @@ package abs
 
 import (
 	"encoding/json"
+	"strconv"
 	"strings"
 )
 
@@ -61,4 +62,24 @@ func (s *SlackClient) FilterMessages(messages []Message) []Message {
 	}
 
 	return messagesFiltered
+}
+
+func (s *SlackClient) ConvertToPayment(messagesFiltered []Message) []Payment {
+	var payments []Payment
+	for _, message := range messagesFiltered {
+		txtSlice := strings.Split(message.Text, ";")
+		if len(txtSlice) >= 6 {
+			price, _ := strconv.Atoi(strings.Trim(txtSlice[4], " "))
+			monthlyInstallment, _ := strconv.Atoi(strings.Trim(txtSlice[5], " "))
+			payments = append(payments, Payment{
+				Date:               strings.Trim(txtSlice[0], " "),
+				Method:             strings.Trim(txtSlice[1], " "),
+				Category:           strings.Trim(txtSlice[2], " "),
+				Name:               strings.Trim(txtSlice[3], " "),
+				Price:              price,
+				MonthlyInstallment: monthlyInstallment,
+			})
+		}
+	}
+	return payments
 }

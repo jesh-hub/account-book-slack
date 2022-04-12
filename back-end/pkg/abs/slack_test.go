@@ -25,7 +25,8 @@ func TestHistory(t *testing.T) {
 	slackClient := NewSlackClient(slackToken, channelId, botId)
 	messages := slackClient.GetMessages()
 	messagesFiltered := slackClient.FilterMessages(messages)
-	fmt.Println(messagesFiltered)
+	payments := slackClient.ConvertToPayment(messagesFiltered)
+	fmt.Printf("%+v\n", payments)
 
-	assert.NotEqual(t, messagesFiltered, nil)
+	assert.NotEqual(t, payments, nil)
 }
