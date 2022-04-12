@@ -23,10 +23,10 @@ func Handler(ctx context.Context) (Response, error) {
 	botId := os.Getenv("botId")
 
 	slackClient := abs.NewSlackClient(slackToken, channelId, botId)
-	messages := slackClient.GetMessages()
-	messages = slackClient.FilterMessages(messages)
+	messagesFiltered := slackClient.FilterMessages(slackClient.GetMessages())
+	payments := slackClient.ConvertToPayment(messagesFiltered)
 
-	body, err := json.Marshal(messages)
+	body, err := json.Marshal(payments)
 	if err != nil {
 		return Response{StatusCode: 404}, err
 	}
