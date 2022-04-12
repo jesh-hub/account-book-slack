@@ -25,7 +25,7 @@ func NewSlackClient(token string, channelId string, botId string) *SlackClient {
 	}
 }
 
-func (s *SlackClient) NewAPI(uri string, urlQuery map[string]string, target interface{}) {
+func (s *SlackClient) NewAPI(uri string, urlQuery interface{}, target interface{}) {
 	req, err := http.NewRequest("GET", uri, nil)
 	errorHandler(err)
 
@@ -36,11 +36,14 @@ func (s *SlackClient) NewAPI(uri string, urlQuery map[string]string, target inte
 	q := req.URL.Query()
 	q.Add("channel", s.channelId)
 	if urlQuery != nil {
-		for k, v := range urlQuery {
+		var urlQueryMap map[string]string
+		urlQueryJson, _ := json.Marshal(urlQuery)
+		json.Unmarshal(urlQueryJson, &urlQueryMap)
+		for k, v := range urlQueryMap {
 			q.Add(k, v)
 		}
-		req.URL.RawQuery = q.Encode()
 	}
+	req.URL.RawQuery = q.Encode()
 
 	resp, err := s.httpClient.Do(req)
 	errorHandler(err)
