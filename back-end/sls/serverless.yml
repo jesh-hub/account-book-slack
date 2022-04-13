@@ -3,16 +3,28 @@ frameworkVersion: '3'
 
 provider:
   name: aws
+  stage: ${self:custom.stage}
   architecture: arm64
   runtime: provided.al2
   region: ap-northeast-1
   memorySize: 128
   timeout: 10
+  apiGateway:
+    apiKeySourceType: HEADER
+    apiKeys:
+      - apikey-${self:custom.stage}
+    usagePlan:
+      quota:
+        limit: 5000
+        offset: 2
+        period: MONTH
+      throttle:
+        burstLimit: 500
+        rateLimit: 200
   environment:
     slackToken: ${self:custom.environment.slackToken}
     channelId: ${self:custom.environment.channelId}
     botId: ${self:custom.environment.botId}
-#  stage: dev
 
 custom:
   stage: ${opt:stage, self:provider.stage}
@@ -29,9 +41,15 @@ functions:
   payments:
     handler: payments/main.go
     events:
-      - httpApi:
+      - http:
           path: /abs/payments
           method: get
+          private: true
+          request:
+            parameters:
+              querystrings:
+                year: false
+                month: false
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
