@@ -1,14 +1,13 @@
-.PHONY: build clean deploy gomodgen
+.PHONY: deploy-dev deploy-prod
 
-build:
-	export GO111MODULE=on
-	env GOARCH=amd64 GOOS=linux go build -ldflags="-s -w" -o bin/payments payments/main.go
+invoke-local:
+	sls invoke local -f payments -s dev --verbose
 
-clean:
-	rm -rf ./bin ./vendor
+invoke-remote:
+	sls invoke -f payments -s dev --log
 
-deploy-dev: clean build
+deploy-dev:
 	sls deploy --stage dev --verbose
 
-deploy-prod: clean build
+deploy-prod:
 	sls deploy --stage prod --verbose
