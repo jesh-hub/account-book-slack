@@ -2,6 +2,7 @@ package abs
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -36,13 +37,14 @@ func (s *SlackClient) NewAPI(uri string, urlQuery interface{}, target interface{
 	q := req.URL.Query()
 	q.Add("channel", s.channelId)
 	if urlQuery != nil {
-		var urlQueryMap map[string]string
+		var urlQueryMap map[string]interface{}
 		urlQueryJson, _ := json.Marshal(urlQuery)
 		json.Unmarshal(urlQueryJson, &urlQueryMap)
 		for k, v := range urlQueryMap {
-			q.Add(k, v)
+			q.Add(k, fmt.Sprintf("%v", v))
 		}
 	}
+
 	req.URL.RawQuery = q.Encode()
 
 	resp, err := s.httpClient.Do(req)
