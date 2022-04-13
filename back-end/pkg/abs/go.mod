@@ -3,6 +3,7 @@ module github.com/jesh-hub/account-book-slack/back-end/pkg/abs
 go 1.18
 
 require (
+	github.com/cloudflare/ahocorasick v0.0.0-20210425175752-730270c3e184
 	github.com/joho/godotenv v1.4.0
 	github.com/stretchr/testify v1.7.1
 )

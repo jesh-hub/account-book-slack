@@ -1,9 +1,10 @@
 package abs
 
 import (
-	"encoding/json"
 	"strconv"
 	"strings"
+
+	"github.com/cloudflare/ahocorasick"
 )
 
 const (
@@ -17,9 +18,9 @@ type History struct {
 }
 
 type HistoryParameters struct {
-	Latest string
-	Oldest string
-	Limit  int
+	Latest string `json:"latest"`
+	Oldest string `json:"oldest"`
+	Limit  int    `json:"limit"`
 }
 
 type Message struct {
@@ -39,22 +40,21 @@ func NewHistoryParameters() HistoryParameters {
 func (s *SlackClient) GetMessages() []Message {
 	// url 파라미터 설정
 	historyParameters := NewHistoryParameters()
-	var historyParametersMap map[string]string
-	data, _ := json.Marshal(historyParameters)
-	json.Unmarshal(data, &historyParametersMap)
 
 	// Slack API 통신
 	var history History
-	s.NewAPI("https://slack.com/api/conversations.history", historyParametersMap, &history)
+	s.NewAPI("https://slack.com/api/conversations.history", historyParameters, &history)
 	return history.Messages
 }
 
 func (s *SlackClient) FilterMessages(messages []Message) []Message {
 	mentionFilter := "<@" + s.botId + "> "
+	m := ahocorasick.NewStringMatcher([]string{mentionFilter})
 	var messagesFiltered []Message
 	for _, message := range messages {
-		// 멘션이 되었고 사용자가 친 채팅만 필터링
-		if strings.Index(message.Text, mentionFilter) == 0 && len(message.ClientMsgID) > 0 {
+		// bot이 멘션된 채팅만 필터링
+		hits := m.Match([]byte(message.Text))
+		if len(hits) == 1 {
 			// 멘션 텍스트 제거
 			message.Text = strings.Replace(message.Text, mentionFilter, "", 1)
 			messagesFiltered = append(messagesFiltered, message)
