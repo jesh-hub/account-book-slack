@@ -1,8 +1,10 @@
 package abs
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/cloudflare/ahocorasick"
 )
@@ -29,6 +31,11 @@ type Message struct {
 	Ts          string `json:"ts"`
 }
 
+type MessageParameters struct {
+	Start string `json:"start"`
+	End   string `json:"end"`
+}
+
 func NewHistoryParameters() HistoryParameters {
 	return HistoryParameters{
 		Latest: DEFAULT_HISTORY_LATEST,
@@ -37,9 +44,19 @@ func NewHistoryParameters() HistoryParameters {
 	}
 }
 
-func (s *SlackClient) GetMessages() []Message {
+func (s *SlackClient) GetMessages(messageParameters MessageParameters) []Message {
 	// url 파라미터 설정
 	historyParameters := NewHistoryParameters()
+	if len(messageParameters.Start) > 0 && len(messageParameters.End) > 0 {
+		startTime, err := time.Parse("2006-01", messageParameters.Start)
+		errorHandler(err)
+		endTime, err := time.Parse("2006-01", messageParameters.End)
+		errorHandler(err)
+
+		// 늦게 입력된 채팅 크롤링을 위해서 end + 1달 처리
+		historyParameters.Oldest = fmt.Sprintf("%v", startTime.Unix())
+		historyParameters.Latest = fmt.Sprintf("%v", endTime.AddDate(0, 1, 0).Unix())
+	}
 
 	// Slack API 통신
 	var history History
