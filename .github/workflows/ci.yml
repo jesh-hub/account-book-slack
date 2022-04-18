@@ -1,0 +1,59 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [master]
+    paths-ignore: ["**.md", ".gitignore", ".github/**", "back-end/**"]
+  pull_request:
+    branches: [master]
+    paths-ignore: ["**.md", ".gitignore", ".github/**", "back-end/**"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
+
+      - uses: actions/cache@v3
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build
+        run: yarn build
+
+      - name: Commit files
+        if: ${{ github.event_name == 'push' }}
+        env:
+          BUILD_PATH: build
+        working-directory: ./front-end
+        run: |
+          ls | grep -v ${{ env.BUILD_PATH }} | xargs rm -rf
+          mv ${{ env.BUILD_PATH }}/* . && rm -rf pages
+          git config --local user.email "cho911115@gmail.com"
+          git config --local user.name "github-actions[bot]"
+          git add --all
+          git commit -m "Build & Deploy to GitHub Pages" -a
+
+      - name: Push build-artifacts
+        if: ${{ github.event_name == 'push' }}
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: pages
+          force: true
