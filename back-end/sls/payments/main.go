@@ -15,15 +15,20 @@ import (
 //
 // https://serverless.com/framework/docs/providers/aws/events/apigateway/#lambda-proxy-integration
 type Response events.APIGatewayProxyResponse
+type Request events.APIGatewayV2HTTPRequest
 
 // Handler is our lambda handler invoked by the `lambda.Start` function call
-func Handler(ctx context.Context) (Response, error) {
+func Handler(ctx context.Context, request Request) (Response, error) {
 	slackToken := os.Getenv("slackToken")
 	channelId := os.Getenv("channelId")
 	botId := os.Getenv("botId")
 
 	slackClient := abs.NewSlackClient(slackToken, channelId, botId)
-	messagesFiltered := slackClient.FilterMessages(slackClient.GetMessages())
+	messageParameters := abs.MessageParameters{
+		Start: request.QueryStringParameters["start"],
+		End:   request.QueryStringParameters["end"],
+	}
+	messagesFiltered := slackClient.FilterMessages(slackClient.GetMessages(messageParameters))
 	payments := slackClient.ConvertToPayment(messagesFiltered)
 
 	body, err := json.Marshal(payments)

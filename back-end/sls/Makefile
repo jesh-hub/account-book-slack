@@ -6,8 +6,5 @@ invoke-local:
 invoke-remote:
 	sls invoke -f payments -s dev --log
 
-deploy-dev:
+deploy:
 	sls deploy --stage dev --verbose
-
-deploy-prod:
-	sls deploy --stage prod --verbose
