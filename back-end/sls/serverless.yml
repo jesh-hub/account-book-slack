@@ -19,7 +19,7 @@ custom:
   environment: ${file(secret.yml), file(secret.yml):default}
   go:
     cmd: GOOS=linux GOARCH=arm64 go build -ldflags="-s -w" -tags lambda.norpc
-    supportedRuntimes: ["provided.al2"]
+    supportedRuntimes: [ "provided.al2" ]
     buildProvidedRuntimeAsBootstrap: true
 
 plugins:
