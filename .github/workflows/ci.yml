@@ -11,6 +11,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      working-directory: ./front-end
     steps:
       - uses: actions/checkout@v3
 
@@ -32,19 +34,20 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Install dependencies
+        working-directory: ${{ env.working-directory }}
         run: yarn install --frozen-lockfile
 
       - name: Build
+        working-directory: ${{ env.working-directory }}
         run: yarn build
 
       - name: Commit files
         if: ${{ github.event_name == 'push' }}
         env:
-          BUILD_PATH: build
-        working-directory: ./front-end
+          BUILD_PATH: ${{ env.working-directory }}/build
         run: |
-          ls | grep -v ${{ env.BUILD_PATH }} | xargs rm -rf
-          mv ${{ env.BUILD_PATH }}/* . && rm -rf pages
+          ls | grep -v ${{ env.working-directory }} | xargs rm -rf
+          mv ${{ env.BUILD_PATH }}/* . && rm -rf ${{ env.working-directory }}
           git config --local user.email "cho911115@gmail.com"
           git config --local user.name "github-actions[bot]"
           git add --all
