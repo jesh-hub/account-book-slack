@@ -6,7 +6,9 @@ import axios from 'axios';
  * @returns {Promise<any>}
  */
 export async function get(url, params) {
-  const { data } = await axios.get(url, { params });
+  const { data } = await axios.get(
+    `${process.env.REACT_APP_ABS}${url}`,
+    { params });
   return data;
 }
 
