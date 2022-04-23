@@ -3,10 +3,10 @@ name: Continuous Integration
 on:
   push:
     branches: [master]
-    paths-ignore: ["**.md", ".gitignore", "back-end/**"]
+    paths-ignore: ["**.md", ".gitignore", ".github/**", "back-end/**"]
   pull_request:
     branches: [master]
-    paths-ignore: ["**.md", ".gitignore", "back-end/**"]
+    paths-ignore: ["**.md", ".gitignore", ".github/**", "back-end/**"]
 
 jobs:
   build:
