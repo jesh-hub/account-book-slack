@@ -3,7 +3,6 @@ frameworkVersion: '3'
 
 provider:
   name: aws
-  stage: ${self:custom.stage}
   architecture: arm64
   runtime: provided.al2
   region: ap-northeast-1
@@ -19,7 +18,6 @@ provider:
         - '*'
 
 custom:
-  stage: ${opt:stage, self:provider.stage}
   environment: ${file(secret.yml), file(secret.yml):default}
   go:
     cmd: GOOS=linux GOARCH=arm64 go build -ldflags="-s -w" -tags lambda.norpc
@@ -28,7 +26,6 @@ custom:
 
 plugins:
   - serverless-go-plugin
-
 functions:
   payments:
     handler: payments/main.go
