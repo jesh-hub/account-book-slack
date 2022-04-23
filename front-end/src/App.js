@@ -1,6 +1,7 @@
 import './App.css';
-import {DropdownButton, Dropdown} from 'react-bootstrap';
+import {Dropdown, DropdownButton} from 'react-bootstrap';
 import {useState} from 'react';
+import SummaryBySign from './components/SummaryBySign';
 
 function App() {
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
@@ -26,6 +27,10 @@ function App() {
         >
           {monthDropdownItems}
         </DropdownButton>
+        <SummaryBySign
+          currentMonth={currentMonth}
+          mt="1"
+        />
       </header>
     </div>
   );
