@@ -36,6 +36,18 @@ type MessageParameters struct {
 	End   string `json:"end"`
 }
 
+func (mp *MessageParameters) StartAsTime() time.Time {
+	startTime, err := time.Parse("2006-01", mp.Start)
+	errorHandler(err)
+	return startTime
+}
+
+func (mp *MessageParameters) EndAsTime() time.Time {
+	endTime, err := time.Parse("2006-01", mp.End)
+	errorHandler(err)
+	return endTime
+}
+
 func NewHistoryParameters() HistoryParameters {
 	return HistoryParameters{
 		Latest: DEFAULT_HISTORY_LATEST,
@@ -48,14 +60,9 @@ func (s *SlackClient) GetMessages(messageParameters MessageParameters) []Message
 	// url 파라미터 설정
 	historyParameters := NewHistoryParameters()
 	if len(messageParameters.Start) > 0 && len(messageParameters.End) > 0 {
-		startTime, err := time.Parse("2006-01", messageParameters.Start)
-		errorHandler(err)
-		endTime, err := time.Parse("2006-01", messageParameters.End)
-		errorHandler(err)
-
+		historyParameters.Oldest = fmt.Sprintf("%v", messageParameters.StartAsTime().Unix())
 		// 늦게 입력된 채팅 크롤링을 위해서 end + 1달 처리
-		historyParameters.Oldest = fmt.Sprintf("%v", startTime.Unix())
-		historyParameters.Latest = fmt.Sprintf("%v", endTime.AddDate(0, 1, 0).Unix())
+		historyParameters.Latest = fmt.Sprintf("%v", messageParameters.EndAsTime().AddDate(0, 1, 0).Unix())
 	}
 
 	// Slack API 통신
@@ -81,21 +88,40 @@ func (s *SlackClient) FilterMessages(messages []Message) []Message {
 	return messagesFiltered
 }
 
-func (s *SlackClient) ConvertToPayment(messagesFiltered []Message) []Payment {
+func (s *SlackClient) ConvertToPayment(messagesFiltered []Message, messageParameters MessageParameters) []Payment {
+	trim := func(s string) string {
+		return strings.Trim(s, " ")
+	}
+
+	dateFilter := func(date string) bool {
+		dateTime, err := time.Parse("2006-01-02", date)
+		errorHandler(err)
+
+		if dateTime.Unix() >= messageParameters.StartAsTime().Unix() &&
+			dateTime.Unix() < messageParameters.EndAsTime().AddDate(0, 1, 0).Unix() {
+			return true
+		} else {
+			return false
+		}
+	}
+
 	var payments []Payment
 	for _, message := range messagesFiltered {
 		txtSlice := strings.Split(message.Text, ";")
 		if len(txtSlice) >= 6 {
-			price, _ := strconv.Atoi(strings.Trim(txtSlice[4], " "))
-			monthlyInstallment, _ := strconv.Atoi(strings.Trim(txtSlice[5], " "))
-			payments = append(payments, Payment{
-				Date:               strings.Trim(txtSlice[0], " "),
-				Method:             strings.Trim(txtSlice[1], " "),
-				Category:           strings.Trim(txtSlice[2], " "),
-				Name:               strings.Trim(txtSlice[3], " "),
-				Price:              price,
-				MonthlyInstallment: monthlyInstallment,
-			})
+			date := trim(txtSlice[0])
+			if dateFilter(date) {
+				price, _ := strconv.Atoi(trim(txtSlice[4]))
+				monthlyInstallment, _ := strconv.Atoi(trim(txtSlice[5]))
+				payments = append(payments, Payment{
+					Date:               date,
+					Method:             trim(txtSlice[1]),
+					Category:           trim(txtSlice[2]),
+					Name:               trim(txtSlice[3]),
+					Price:              price,
+					MonthlyInstallment: monthlyInstallment,
+				})
+			}
 		}
 	}
 	return payments
