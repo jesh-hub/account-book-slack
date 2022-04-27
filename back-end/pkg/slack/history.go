@@ -94,14 +94,20 @@ func (s *SlackClient) ConvertToPayment(messagesFiltered []Message, messageParame
 	}
 
 	dateFilter := func(date string) bool {
-		dateTime, err := time.Parse("2006-01-02", date)
-		errorHandler(err)
+		if len(messageParameters.Start) > 0 && len(messageParameters.End) > 0 {
+			// 날짜 범위 파라미터 있을 경우 해당 범위만 조회
+			dateTime, err := time.Parse("2006-01-02", date)
+			errorHandler(err)
 
-		if dateTime.Unix() >= messageParameters.StartAsTime().Unix() &&
-			dateTime.Unix() < messageParameters.EndAsTime().AddDate(0, 1, 0).Unix() {
-			return true
+			if dateTime.Unix() >= messageParameters.StartAsTime().Unix() &&
+				dateTime.Unix() < messageParameters.EndAsTime().AddDate(0, 1, 0).Unix() {
+				return true
+			} else {
+				return false
+			}
 		} else {
-			return false
+			// 날짜 범위 파라미터 없을 경우 전체 조회
+			return true
 		}
 	}
 
