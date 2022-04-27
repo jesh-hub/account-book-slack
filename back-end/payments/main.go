@@ -1,11 +1,11 @@
 package main
 
 import (
+	absSlack "abs/pkg/slack"
 	"context"
 	"encoding/json"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/jesh-hub/account-book-slack/back-end/pkg/abs"
 	"log"
 	"os"
 )
@@ -23,8 +23,8 @@ func Handler(ctx context.Context, request Request) (Response, error) {
 	channelId := os.Getenv("channelId")
 	botId := os.Getenv("botId")
 
-	slackClient := abs.NewSlackClient(slackToken, channelId, botId)
-	messageParameters := abs.MessageParameters{
+	slackClient := absSlack.NewSlackClient(slackToken, channelId, botId)
+	messageParameters := absSlack.MessageParameters{
 		Start: request.QueryStringParameters["start"],
 		End:   request.QueryStringParameters["end"],
 	}
