@@ -1,4 +1,4 @@
-package abs
+package slack
 
 import (
 	"encoding/json"

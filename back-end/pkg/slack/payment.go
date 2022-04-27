@@ -1,4 +1,4 @@
-package abs
+package slack
 
 type Payment struct {
 	Date               string `json:"date"`
