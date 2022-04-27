@@ -1,7 +1,7 @@
 import './App.css';
 import {Dropdown, DropdownButton} from 'react-bootstrap';
 import {useEffect, useReducer, useState} from 'react';
-import DailyPaymentContainer from './components/DailyPaymentContainer';
+import PaymentListView from './components/PaymentListView';
 import SummaryBySign from './components/SummaryBySign';
 import * as Api from './common/Api';
 
@@ -48,13 +48,16 @@ function App() {
         >
           {monthDropdownItems}
         </DropdownButton>
-        <SummaryBySign
-          payments={state.payments}
-          processing={state.processing}
-          mt="1"
-        />
+        <article className="abs-monthly-summary">
+          <SummaryBySign
+            payments={state.payments}
+            processing={state.processing}
+            mt="1"
+          />
+        </article>
       </header>
       <main className="app-main">
+        <PaymentListView payments={state.payments} />
       </main>
     </div>
   );

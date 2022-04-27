@@ -12,10 +12,14 @@
 .app-header .abs-full-width-button .dropdown-menu {
   width: 100%;
 }
+.app-header .abs-monthly-summary {
+  margin-top: 1em;
+  position: relative;
+  text-align: right;
+}
 
 .app-main {
-  margin: 0 auto;
-  width: 90vw;
+  width: 100vw;
   flex: 1 0 auto;
   overflow: auto;
   position: relative;

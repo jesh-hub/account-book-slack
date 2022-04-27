@@ -1,4 +1,3 @@
-import './SummaryBySign.css';
 import ProcessingSpinner from '../common/ProcessingSpinner';
 
 /**
@@ -21,14 +20,11 @@ function SummaryBySign(props) {
   }, [0, 0]);
 
   return (
-    <article
-      className="abs-summary-by-sign"
-      style={{'marginTop': `${props.mt}em`}}
-    >
+    <>
       <h6><b style={{'color': '#02d505'}}>수입: </b>{income.toLocaleString()}원</h6>
       <h6><b style={{'color': '#fd2926'}}>지출: </b>{outgoing.toLocaleString()}원</h6>
-      <ProcessingSpinner processing={props.processing}/>
-    </article>
+      <ProcessingSpinner processing={props.processing} />
+    </>
   );
 }
 
