@@ -29,7 +29,7 @@ func Handler(ctx context.Context, request Request) (Response, error) {
 		End:   request.QueryStringParameters["end"],
 	}
 	messagesFiltered := slackClient.FilterMessages(slackClient.GetMessages(messageParameters))
-	payments := slackClient.ConvertToPayment(messagesFiltered)
+	payments := slackClient.ConvertToPayment(messagesFiltered, messageParameters)
 
 	body, err := json.Marshal(payments)
 	if err != nil {

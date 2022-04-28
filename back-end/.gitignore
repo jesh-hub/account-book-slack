@@ -1,5 +1,5 @@
 # Serverless directories
-sls/.serverless
+.serverless
 
 # golang output binary directory
 bin
