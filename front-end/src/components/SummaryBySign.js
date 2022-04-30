@@ -1,5 +1,3 @@
-import ProcessingSpinner from '../common/ProcessingSpinner';
-
 /**
  * @typedef {Object} Payment
  * @property {string} category
@@ -23,7 +21,6 @@ function SummaryBySign(props) {
     <>
       <h6><b style={{'color': '#02d505'}}>수입: </b>{income.toLocaleString()}원</h6>
       <h6><b style={{'color': '#fd2926'}}>지출: </b>{outgoing.toLocaleString()}원</h6>
-      <ProcessingSpinner processing={props.processing} />
     </>
   );
 }

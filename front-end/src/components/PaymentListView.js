@@ -15,6 +15,7 @@ function PaymentListView(props) {
 
   return (
     <article className="abs-payment-list-view">
+      {paymentsByDate.length === 0 && <p>내역이 없어요.</p>}
       {paymentsByDate.map(payments =>
         <section
           key={payments.key}
