@@ -23,7 +23,7 @@ func init() {
 
 func TestHistory(t *testing.T) {
 	parameters := MessageParameters{
-		Start: "2022-04",
+		Start: "2022-05",
 		End:   "2022-05",
 	}
 

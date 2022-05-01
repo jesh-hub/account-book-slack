@@ -37,19 +37,35 @@ type MessageParameters struct {
 	End   string `json:"end"`
 }
 
-func (mp *MessageParameters) StartAsTime() time.Time {
+func (mp *MessageParameters) StartAsTime(location string) time.Time {
 	// Slack 앱 사용자의 Local 타임존을 파라미터로 받기 때문에 UTC 타임존으로 변환
 	// 예시: 5월 1일 00시 ~ 09시에 입력한 채팅은 UTC 기준으로 4월 30일이기 때문에 GetMessages() 험수에서 누락됨
-	loc, _ := time.LoadLocation(CLIENT_TIMEZONE)
-	startTime, err := time.ParseInLocation("2006-01", mp.Start, loc)
+	var startTime time.Time
+	var err error
+
+	if len(location) > 0 {
+		loc, _ := time.LoadLocation(location)
+		startTime, err = time.ParseInLocation("2006-01", mp.Start, loc)
+
+	} else {
+		startTime, err = time.Parse("2006-01", mp.Start)
+	}
+
 	errorHandler(err)
 
 	return startTime.UTC()
 }
 
-func (mp *MessageParameters) EndAsTime() time.Time {
-	loc, _ := time.LoadLocation(CLIENT_TIMEZONE)
-	endTime, err := time.ParseInLocation("2006-01", mp.End, loc)
+func (mp *MessageParameters) EndAsTime(location string) time.Time {
+	var endTime time.Time
+	var err error
+
+	if len(location) > 0 {
+		loc, _ := time.LoadLocation(location)
+		endTime, err = time.ParseInLocation("2006-01", mp.End, loc)
+	} else {
+		endTime, err = time.Parse("2006-01", mp.End)
+	}
 	errorHandler(err)
 
 	return endTime.UTC()
@@ -67,9 +83,9 @@ func (s *SlackClient) GetMessages(messageParameters MessageParameters) []Message
 	// url 파라미터 설정
 	historyParameters := NewHistoryParameters()
 	if len(messageParameters.Start) > 0 && len(messageParameters.End) > 0 {
-		historyParameters.Oldest = fmt.Sprintf("%v", messageParameters.StartAsTime().Unix())
+		historyParameters.Oldest = fmt.Sprintf("%v", messageParameters.StartAsTime(CLIENT_TIMEZONE).Unix())
 		// 늦게 입력된 채팅 크롤링을 위해서 end + 1달 처리
-		historyParameters.Latest = fmt.Sprintf("%v", messageParameters.EndAsTime().AddDate(0, 1, 0).Unix())
+		historyParameters.Latest = fmt.Sprintf("%v", messageParameters.EndAsTime(CLIENT_TIMEZONE).AddDate(0, 1, 0).Unix())
 	}
 
 	// Slack API 통신
@@ -106,8 +122,8 @@ func (s *SlackClient) ConvertToPayment(messagesFiltered []Message, messageParame
 			dateTime, err := time.Parse("2006-01-02", date)
 			errorHandler(err)
 
-			if dateTime.Unix() >= messageParameters.StartAsTime().Unix() &&
-				dateTime.Unix() < messageParameters.EndAsTime().AddDate(0, 1, 0).Unix() {
+			if dateTime.Unix() >= messageParameters.StartAsTime("").Unix() &&
+				dateTime.Unix() < messageParameters.EndAsTime("").AddDate(0, 1, 0).Unix() {
 				return true
 			} else {
 				return false
