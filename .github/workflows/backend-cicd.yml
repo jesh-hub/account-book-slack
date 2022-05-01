@@ -24,6 +24,11 @@ jobs:
           npm i -g serverless
           npm ci
 
+      - name: Create serverless secret file
+        uses: mikefarah/yq@v4.25.1
+        with:
+          cmd: slackToken=${{ secrets.SLACKTOKEN }} channelId=${{ secrets.CHANNELID }} botId=${{ secrets.BOTID }} yq -i '.slackToken = strenv(slackToken) | .channelId = strenv(channelId) | .botId = strenv(botId)' ${{ env.working-directory }}/secret.yml
+      
       - name: serverless deploy
         working-directory: ${{ env.working-directory }}
         run: make deploy
