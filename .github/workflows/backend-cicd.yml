@@ -3,7 +3,7 @@ name: Backend CI/CD
 on:
   push:
     branches: [ master ]
-    paths: [ "back-end/**" ]
+    paths: [ "back-end/**", ".github/workflows/backend-cicd.yml" ]
 
 jobs:
   deploy:
@@ -25,6 +25,10 @@ jobs:
           npm ci
 
       - name: Create serverless secret file
+        working-directory: ${{ env.working-directory }}
+        run: touch secret.yml
+        
+      - name: Update serverless secret file
         uses: mikefarah/yq@v4.25.1
         with:
           cmd: slackToken=${{ secrets.SLACKTOKEN }} channelId=${{ secrets.CHANNELID }} botId=${{ secrets.BOTID }} yq -i '.slackToken = strenv(slackToken) | .channelId = strenv(channelId) | .botId = strenv(botId)' ${{ env.working-directory }}/secret.yml
