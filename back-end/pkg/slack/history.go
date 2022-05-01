@@ -39,13 +39,16 @@ type MessageParameters struct {
 func (mp *MessageParameters) StartAsTime() time.Time {
 	startTime, err := time.Parse("2006-01", mp.Start)
 	errorHandler(err)
-	return startTime
+	// KST 기준으로 넘어오는 날짜 파라미터를 UTC로 맞추기 위해서 9시간 빼기
+	// 예시: 5월 1일 00시 ~ 09시에 입력한 채팅은 UTC 기준으로 4월 30일이기 때문에 GetMessages() 험수에서 누락됨
+	return startTime.Add(-9 * time.Hour)
 }
 
 func (mp *MessageParameters) EndAsTime() time.Time {
 	endTime, err := time.Parse("2006-01", mp.End)
 	errorHandler(err)
-	return endTime
+	// StartAsTime() 주석과 동일
+	return endTime.Add(-9 * time.Hour)
 }
 
 func NewHistoryParameters() HistoryParameters {
