@@ -13,6 +13,7 @@ const (
 	DEFAULT_HISTORY_LATEST = ""
 	DEFAULT_HISTORY_OLDEST = "0"
 	DEFAULT_HISTORY_Limit  = 100
+	CLIENT_TIMEZONE        = "Asia/Seoul"
 )
 
 type History struct {
@@ -37,18 +38,21 @@ type MessageParameters struct {
 }
 
 func (mp *MessageParameters) StartAsTime() time.Time {
-	startTime, err := time.Parse("2006-01", mp.Start)
-	errorHandler(err)
-	// KST 기준으로 넘어오는 날짜 파라미터를 UTC로 맞추기 위해서 9시간 빼기
+	// Slack 앱 사용자의 Local 타임존을 파라미터로 받기 때문에 UTC 타임존으로 변환
 	// 예시: 5월 1일 00시 ~ 09시에 입력한 채팅은 UTC 기준으로 4월 30일이기 때문에 GetMessages() 험수에서 누락됨
-	return startTime.Add(-9 * time.Hour)
+	loc, _ := time.LoadLocation(CLIENT_TIMEZONE)
+	startTime, err := time.ParseInLocation("2006-01", mp.Start, loc)
+	errorHandler(err)
+
+	return startTime.UTC()
 }
 
 func (mp *MessageParameters) EndAsTime() time.Time {
-	endTime, err := time.Parse("2006-01", mp.End)
+	loc, _ := time.LoadLocation(CLIENT_TIMEZONE)
+	endTime, err := time.ParseInLocation("2006-01", mp.End, loc)
 	errorHandler(err)
-	// StartAsTime() 주석과 동일
-	return endTime.Add(-9 * time.Hour)
+
+	return endTime.UTC()
 }
 
 func NewHistoryParameters() HistoryParameters {
