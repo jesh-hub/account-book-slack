@@ -2,6 +2,7 @@ import './App.css';
 import {Dropdown, DropdownButton} from 'react-bootstrap';
 import {useEffect, useReducer, useState} from 'react';
 import PaymentListView from './components/PaymentListView';
+import ProcessingSpinner from './common/ProcessingSpinner';
 import SummaryBySign from './components/SummaryBySign';
 import * as Api from './common/Api';
 
@@ -19,9 +20,9 @@ function App() {
         {i + 1}월
       </Dropdown.Item>);
 
-  const [state, dispatch] = useReducer((_, action) => ({
+  const [state, dispatch] = useReducer((_state, action) => ({
     processing: action.processing,
-    payments: action.data ?? []
+    payments: action.processing ? _state.payments : action.data ?? []
   }), { processing: false, payments: [] });
 
   useEffect(() => {
@@ -51,13 +52,13 @@ function App() {
         <article className="abs-monthly-summary">
           <SummaryBySign
             payments={state.payments}
-            processing={state.processing}
             mt="1"
           />
+          <ProcessingSpinner processing={state.processing} />
         </article>
       </header>
       <main className="app-main">
-        <PaymentListView payments={state.payments} />
+        {! state.processing && <PaymentListView payments={state.payments} />}
       </main>
     </div>
   );

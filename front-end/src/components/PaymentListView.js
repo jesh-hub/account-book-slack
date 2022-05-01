@@ -1,5 +1,6 @@
 import './PaymentListView.css';
 import SummaryBySign from './SummaryBySign';
+import { BsExclamationCircle } from "react-icons/bs";
 
 function PaymentListView(props) {
   let currentDate;
@@ -15,6 +16,8 @@ function PaymentListView(props) {
 
   return (
     <article className="abs-payment-list-view">
+      {paymentsByDate.length === 0 &&
+        <p><BsExclamationCircle />내역이 없어요.</p>}
       {paymentsByDate.map(payments =>
         <section
           key={payments.key}
