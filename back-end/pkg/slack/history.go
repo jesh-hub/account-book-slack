@@ -46,7 +46,6 @@ func (mp *MessageParameters) StartAsTime(location string) time.Time {
 	if len(location) > 0 {
 		loc, _ := time.LoadLocation(location)
 		startTime, err = time.ParseInLocation("2006-01", mp.Start, loc)
-
 	} else {
 		startTime, err = time.Parse("2006-01", mp.Start)
 	}
