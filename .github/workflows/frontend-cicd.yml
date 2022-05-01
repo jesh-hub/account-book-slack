@@ -1,12 +1,12 @@
-name: Continuous Integration
+name: Frontend CI/CD
 
 on:
   push:
-    branches: [master]
-    paths-ignore: ["**.md", ".gitignore", ".github/**", "back-end/**"]
+    branches: [ master ]
+    paths: [ "front-end/**" ]
   pull_request:
-    branches: [master]
-    paths-ignore: ["**.md", ".gitignore", ".github/**", "back-end/**"]
+    branches: [ master ]
+    paths: [ "front-end/**" ]
 
 jobs:
   build:
