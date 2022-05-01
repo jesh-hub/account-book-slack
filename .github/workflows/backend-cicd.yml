@@ -1,0 +1,32 @@
+name: Backend CI/CD
+
+on:
+  push:
+    branches: [ master ]
+    paths: [ "back-end/**" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      working-directory: back-end
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ${{ env.working-directory }}
+
+      - name: serverless deploy
+        uses: serverless/github-action@v3
+        with:
+          args: deploy -c ${{ env.working-directory }}/serverless.yml
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
