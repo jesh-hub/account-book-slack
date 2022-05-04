@@ -1,12 +1,15 @@
 .app {
   display: flex;
   flex-direction: column;
-  height: 100vh;
 }
 
 .app-header {
-  margin: 10vh auto 0;
+  position: sticky;
+  top: 0;
+  margin: 0 auto;
+  padding-top: 10vh;
   width: 80vw;
+  background-color: white;
 }
 .app-header .abs-full-width-button .dropdown-toggle,
 .app-header .abs-full-width-button .dropdown-menu {
@@ -21,6 +24,4 @@
 .app-main {
   width: 100vw;
   flex: 1 0 auto;
-  overflow: auto;
-  position: relative;
 }
