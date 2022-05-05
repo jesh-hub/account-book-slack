@@ -14,6 +14,7 @@ const (
 	DEFAULT_HISTORY_OLDEST = "0"
 	DEFAULT_HISTORY_Limit  = 100
 	CLIENT_TIMEZONE        = "Asia/Seoul"
+	TIME_FORMAT_YYYY_MM    = "2006-01"
 )
 
 type History struct {
@@ -45,9 +46,9 @@ func (mp *MessageParameters) StartAsTime(location string) time.Time {
 
 	if len(location) > 0 {
 		loc, _ := time.LoadLocation(location)
-		startTime, err = time.ParseInLocation("2006-01", mp.Start, loc)
+		startTime, err = time.ParseInLocation(TIME_FORMAT_YYYY_MM, mp.Start, loc)
 	} else {
-		startTime, err = time.Parse("2006-01", mp.Start)
+		startTime, err = time.Parse(TIME_FORMAT_YYYY_MM, mp.Start)
 	}
 
 	errorHandler(err)
@@ -61,9 +62,9 @@ func (mp *MessageParameters) EndAsTime(location string) time.Time {
 
 	if len(location) > 0 {
 		loc, _ := time.LoadLocation(location)
-		endTime, err = time.ParseInLocation("2006-01", mp.End, loc)
+		endTime, err = time.ParseInLocation(TIME_FORMAT_YYYY_MM, mp.End, loc)
 	} else {
-		endTime, err = time.Parse("2006-01", mp.End)
+		endTime, err = time.Parse(TIME_FORMAT_YYYY_MM, mp.End)
 	}
 	errorHandler(err)
 
