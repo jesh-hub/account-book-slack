@@ -24,7 +24,7 @@ func Handler(ctx context.Context, request Request) (Response, error) {
 	botId := os.Getenv("botId")
 
 	slackClient := absSlack.NewSlackClient(slackToken, channelId, botId)
-	messageParameters := absSlack.MessageParameters{
+	messageParameters := &absSlack.MessageParameters{
 		Start: request.QueryStringParameters["start"],
 		End:   request.QueryStringParameters["end"],
 	}

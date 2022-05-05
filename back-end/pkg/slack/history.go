@@ -1,7 +1,6 @@
 package slack
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -14,10 +13,11 @@ const (
 	DEFAULT_HISTORY_OLDEST = "0"
 	DEFAULT_HISTORY_Limit  = 100
 	CLIENT_TIMEZONE        = "Asia/Seoul"
+	TIME_FORMAT_YYYY_MM    = "2006-01"
 )
 
 type History struct {
-	Messages []Message `json:"messages"`
+	Messages []*Message `json:"messages"`
 }
 
 type HistoryParameters struct {
@@ -45,9 +45,9 @@ func (mp *MessageParameters) StartAsTime(location string) time.Time {
 
 	if len(location) > 0 {
 		loc, _ := time.LoadLocation(location)
-		startTime, err = time.ParseInLocation("2006-01", mp.Start, loc)
+		startTime, err = time.ParseInLocation(TIME_FORMAT_YYYY_MM, mp.Start, loc)
 	} else {
-		startTime, err = time.Parse("2006-01", mp.Start)
+		startTime, err = time.Parse(TIME_FORMAT_YYYY_MM, mp.Start)
 	}
 
 	errorHandler(err)
@@ -61,9 +61,9 @@ func (mp *MessageParameters) EndAsTime(location string) time.Time {
 
 	if len(location) > 0 {
 		loc, _ := time.LoadLocation(location)
-		endTime, err = time.ParseInLocation("2006-01", mp.End, loc)
+		endTime, err = time.ParseInLocation(TIME_FORMAT_YYYY_MM, mp.End, loc)
 	} else {
-		endTime, err = time.Parse("2006-01", mp.End)
+		endTime, err = time.Parse(TIME_FORMAT_YYYY_MM, mp.End)
 	}
 	errorHandler(err)
 
@@ -78,29 +78,49 @@ func NewHistoryParameters() HistoryParameters {
 	}
 }
 
-func (s *SlackClient) GetMessages(messageParameters MessageParameters) []Message {
+func (mp *MessageParameters) dateFilter(date string) bool {
+	if len(mp.Start) > 0 && len(mp.End) > 0 {
+		// 날짜 범위 파라미터 있을 경우 해당 범위만 조회
+		dateTime, err := time.Parse("2006-01-02", date)
+		errorHandler(err)
+
+		if dateTime.Unix() >= mp.StartAsTime("").Unix() &&
+			dateTime.Unix() < mp.EndAsTime("").AddDate(0, 1, 0).Unix() {
+			return true
+		} else {
+			return false
+		}
+	} else {
+		// 날짜 범위 파라미터 없을 경우 전체 조회
+		return true
+	}
+}
+
+func (s *SlackClient) GetMessages(messageParameters *MessageParameters) []*Message {
 	// url 파라미터 설정
 	historyParameters := NewHistoryParameters()
 	if len(messageParameters.Start) > 0 && len(messageParameters.End) > 0 {
-		historyParameters.Oldest = fmt.Sprintf("%v", messageParameters.StartAsTime(CLIENT_TIMEZONE).Unix())
+		historyParameters.Oldest = strconv.FormatInt(messageParameters.StartAsTime(CLIENT_TIMEZONE).Unix(), 10)
 		// 늦게 입력된 채팅 크롤링을 위해서 end + 1달 처리
-		historyParameters.Latest = fmt.Sprintf("%v", messageParameters.EndAsTime(CLIENT_TIMEZONE).AddDate(0, 1, 0).Unix())
+		historyParameters.Latest = strconv.FormatInt(messageParameters.EndAsTime(CLIENT_TIMEZONE).AddDate(0, 1, 0).Unix(), 10)
 	}
 
 	// Slack API 통신
-	var history History
+	var history *History
 	s.NewAPI("https://slack.com/api/conversations.history", historyParameters, &history)
+
 	return history.Messages
 }
 
-func (s *SlackClient) FilterMessages(messages []Message) []Message {
+func (s *SlackClient) FilterMessages(messages []*Message) []*Message {
 	mentionFilter := "<@" + s.botId + "> "
 	m := ahocorasick.NewStringMatcher([]string{mentionFilter})
-	var messagesFiltered []Message
+
+	var messagesFiltered []*Message
+
 	for _, message := range messages {
 		// bot이 멘션된 채팅만 필터링
-		hits := m.Match([]byte(message.Text))
-		if len(hits) == 1 {
+		if len(m.Match([]byte(message.Text))) == 1 {
 			// 멘션 텍스트 제거
 			message.Text = strings.Replace(message.Text, mentionFilter, "", 1)
 			messagesFiltered = append(messagesFiltered, message)
@@ -110,38 +130,21 @@ func (s *SlackClient) FilterMessages(messages []Message) []Message {
 	return messagesFiltered
 }
 
-func (s *SlackClient) ConvertToPayment(messagesFiltered []Message, messageParameters MessageParameters) []Payment {
+func (s *SlackClient) ConvertToPayment(messagesFiltered []*Message, messageParameters *MessageParameters) []*Payment {
 	trim := func(s string) string {
 		return strings.Trim(s, " ")
 	}
 
-	dateFilter := func(date string) bool {
-		if len(messageParameters.Start) > 0 && len(messageParameters.End) > 0 {
-			// 날짜 범위 파라미터 있을 경우 해당 범위만 조회
-			dateTime, err := time.Parse("2006-01-02", date)
-			errorHandler(err)
+	var payments []*Payment
 
-			if dateTime.Unix() >= messageParameters.StartAsTime("").Unix() &&
-				dateTime.Unix() < messageParameters.EndAsTime("").AddDate(0, 1, 0).Unix() {
-				return true
-			} else {
-				return false
-			}
-		} else {
-			// 날짜 범위 파라미터 없을 경우 전체 조회
-			return true
-		}
-	}
-
-	var payments []Payment
 	for _, message := range messagesFiltered {
 		txtSlice := strings.Split(message.Text, ";")
 		if len(txtSlice) >= 6 {
-			date := trim(txtSlice[0])
-			if dateFilter(date) {
-				price, _ := strconv.Atoi(trim(txtSlice[4]))
+			date := parseDate(trim(txtSlice[0]))
+			if messageParameters.dateFilter(date) {
+				price := parsePrice(trim(txtSlice[4]))
 				monthlyInstallment, _ := strconv.Atoi(trim(txtSlice[5]))
-				payments = append(payments, Payment{
+				payments = append(payments, &Payment{
 					Date:               date,
 					Method:             trim(txtSlice[1]),
 					Category:           trim(txtSlice[2]),
@@ -152,5 +155,26 @@ func (s *SlackClient) ConvertToPayment(messagesFiltered []Message, messageParame
 			}
 		}
 	}
+
 	return payments
+}
+
+func parseDate(date string) string {
+	if strings.Index(date, `.`) > 0 {
+		date = strings.Replace(date, `.`, `-`, -1)
+	}
+
+	return date
+}
+
+func parsePrice(price string) int {
+	// 쉼표가 있으면 제거
+	if strings.Index(price, ",") > 0 {
+		price = strings.Replace(price, `,`, ``, -1)
+	}
+
+	result, err := strconv.Atoi(price)
+	errorHandler(err)
+
+	return result
 }
