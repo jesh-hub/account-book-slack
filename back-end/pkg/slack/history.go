@@ -151,8 +151,20 @@ func (s *SlackClient) ConvertToPayment(messagesFiltered []Message, messageParame
 					Price:              price,
 					MonthlyInstallment: monthlyInstallment,
 				})
+					price := parsePrice(trim(txtSlice[4]))
 			}
 		}
 	}
 	return payments
+}
+func parsePrice(price string) int {
+	// 쉼표가 있으면 제거
+	if strings.Index(price, ",") > 0 {
+		price = strings.Replace(price, `,`, ``, -1)
+	}
+
+	result, err := strconv.Atoi(price)
+	errorHandler(err)
+
+	return result
 }
