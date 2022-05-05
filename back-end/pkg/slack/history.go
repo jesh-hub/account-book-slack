@@ -83,14 +83,15 @@ func (s *SlackClient) GetMessages(messageParameters MessageParameters) []Message
 	// url 파라미터 설정
 	historyParameters := NewHistoryParameters()
 	if len(messageParameters.Start) > 0 && len(messageParameters.End) > 0 {
-		historyParameters.Oldest = fmt.Sprintf("%v", messageParameters.StartAsTime(CLIENT_TIMEZONE).Unix())
+		historyParameters.Oldest = strconv.FormatInt(messageParameters.StartAsTime(CLIENT_TIMEZONE).Unix(), 10)
 		// 늦게 입력된 채팅 크롤링을 위해서 end + 1달 처리
-		historyParameters.Latest = fmt.Sprintf("%v", messageParameters.EndAsTime(CLIENT_TIMEZONE).AddDate(0, 1, 0).Unix())
+		historyParameters.Latest = strconv.FormatInt(messageParameters.EndAsTime(CLIENT_TIMEZONE).AddDate(0, 1, 0).Unix(), 10)
 	}
 
 	// Slack API 통신
 	var history History
 	s.NewAPI("https://slack.com/api/conversations.history", historyParameters, &history)
+
 	return history.Messages
 }
 
