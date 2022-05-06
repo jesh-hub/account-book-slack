@@ -9,7 +9,7 @@
   margin: 0 auto;
   padding-top: 10vh;
   width: 80vw;
-  background-color: white;
+  background-color: var(--bs-body-bg);
 }
 .app-header .abs-full-width-button .dropdown-toggle,
 .app-header .abs-full-width-button .dropdown-menu {
