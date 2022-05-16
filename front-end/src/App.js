@@ -1,10 +1,10 @@
 import './App.css';
 import {Dropdown, DropdownButton} from 'react-bootstrap';
-import {useEffect, useReducer, useState} from 'react';
+import {useState} from 'react';
 import PaymentListView from './components/PaymentListView';
 import ProcessingSpinner from './common/ProcessingSpinner';
 import SummaryBySign from './components/SummaryBySign';
-import * as Api from './common/Api';
+import useRequest from './common/useRequest';
 
 function App() {
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
@@ -20,24 +20,12 @@ function App() {
         {i + 1}월
       </Dropdown.Item>);
 
-  const [state, dispatch] = useReducer((_state, action) => ({
-    processing: action.processing,
-    payments: action.processing ? _state.payments : action.data ?? []
-  }), { processing: false, payments: [] });
-
-  useEffect(() => {
-    fetchData().then();
-
-    async function fetchData() {
-      const monthDateStr = ``+
-        `${new Date().getFullYear()}-${String(currentMonth + 1).padStart(2, '0')}`;
-
-      await Api.getWithDispatch(dispatch, '/payments', {
-        start: monthDateStr,
-        end: monthDateStr
-      });
-    }
-  }, [currentMonth]);
+  const monthDateStr = `` +
+    `${new Date().getFullYear()}-${String(currentMonth + 1).padStart(2, '0')}`;
+  const [processing, payments] = useRequest('/payments', {
+    start: monthDateStr,
+    end: monthDateStr
+  }, [currentMonth], []);
 
   return (
     <div className="app">
@@ -51,14 +39,14 @@ function App() {
         </DropdownButton>
         <article className="abs-monthly-summary">
           <SummaryBySign
-            payments={state.payments}
+            payments={payments}
             mt="1"
           />
-          <ProcessingSpinner processing={state.processing} />
+          <ProcessingSpinner processing={processing} />
         </article>
       </header>
       <main className="app-main">
-        {! state.processing && <PaymentListView payments={state.payments} />}
+        {!processing && <PaymentListView payments={payments} />}
       </main>
     </div>
   );
