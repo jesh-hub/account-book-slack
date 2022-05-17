@@ -2,11 +2,11 @@ name: Frontend CI/CD
 
 on:
   push:
-    branches: [ master ]
-    paths: [ "front-end/**" ]
+    branches: [master]
+    paths: ['front-end/**']
   pull_request:
-    branches: [ master ]
-    paths: [ "front-end/**" ]
+    branches: [master]
+    paths: ['front-end/**']
 
 jobs:
   build:
@@ -19,21 +19,18 @@ jobs:
       - name: Setup node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "16"
-
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
+          node-version: '16'
 
       - uses: actions/cache@v3
         id: yarn-cache
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          path: ${{ env.working-directory }}/node_modules
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-
+            ${{ runner.os }}-nodemodules-
 
       - name: Install dependencies
+        if: ${{ steps.yarn-cache.outputs.cache-hit != 'true' }}
         working-directory: ${{ env.working-directory }}
         run: yarn install --frozen-lockfile
 
