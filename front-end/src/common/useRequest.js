@@ -24,7 +24,6 @@ export default function useRequest(url, params, deps, defaultRes) {
       const { data } = await axios.get(`${process.env.REACT_APP_ABS}${url}`, { params });
       dispatch(data ?? defaultRes);
     } catch (e) {
-      // TODO 콘솔에 에러 찍히는 지 확인
       const axiosErr = e.toJSON();
       addError({
         code: axiosErr.status,
