@@ -5,6 +5,7 @@ import PaymentListView from './components/PaymentListView';
 import ProcessingSpinner from './common/ProcessingSpinner';
 import SummaryBySign from './components/SummaryBySign';
 import useRequest from './common/useRequest';
+import ErrorLogger from './components/ErrorLogger';
 
 function App() {
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
@@ -20,12 +21,12 @@ function App() {
         {i + 1}월
       </Dropdown.Item>);
 
-  const monthDateStr = `` +
+  const start = `` +
     `${new Date().getFullYear()}-${String(currentMonth + 1).padStart(2, '0')}`;
-  const [processing, payments] = useRequest('/payments', {
-    start: monthDateStr,
-    end: monthDateStr
-  }, [currentMonth], []);
+  const end = `` +
+    `${new Date().getFullYear()}-${String(currentMonth + 1).padStart(2, '0')}`;
+  const [processing, payments] = useRequest(
+    '/payments', { start, end }, [currentMonth], []);
 
   return (
     <div className="app">
@@ -48,6 +49,9 @@ function App() {
       <main className="app-main">
         {!processing && <PaymentListView payments={payments} />}
       </main>
+      <aside className="app-aside">
+        <ErrorLogger />
+      </aside>
     </div>
   );
 }

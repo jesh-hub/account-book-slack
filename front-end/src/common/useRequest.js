@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { useEffect, useReducer, useState } from 'react';
+import { useContext, useEffect, useReducer, useState } from 'react';
+import ErrorContext from './ErrorContext';
 
 /** @typedef {any} ResponseDataType */
 /**
@@ -15,14 +16,21 @@ export default function useRequest(url, params, deps, defaultRes) {
     responseData,
     /** @type {function(data: ResponseDataType): void} */ dispatch
   ] = useReducer((_, /** @type {ResponseDataType} */ action) => action, defaultRes);
+  const { addError } = useContext(ErrorContext);
 
   async function fetchData() {
     setIsProcessing(true);
     try {
       const { data } = await axios.get(`${process.env.REACT_APP_ABS}${url}`, { params });
       dispatch(data ?? defaultRes);
-    } catch (err) {
-      // TODO useContext
+    } catch (e) {
+      // TODO 콘솔에 에러 찍히는 지 확인
+      const axiosErr = e.toJSON();
+      addError({
+        code: axiosErr.status,
+        message: e.response.data?.message || axiosErr.message
+      });
+      dispatch(defaultRes);
     } finally {
       setIsProcessing(false);
     }
