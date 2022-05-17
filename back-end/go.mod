@@ -3,7 +3,7 @@ module abs
 go 1.18
 
 require (
-	github.com/aws/aws-lambda-go v1.30.0
+	github.com/aws/aws-lambda-go v1.31.1
 	github.com/cloudflare/ahocorasick v0.0.0-20210425175752-730270c3e184
 	github.com/joho/godotenv v1.4.0
 )
