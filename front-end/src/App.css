@@ -1,6 +1,7 @@
 .app {
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .app-header {
@@ -10,6 +11,7 @@
   padding-top: 10vh;
   width: 80vw;
   background-color: var(--bs-body-bg);
+  z-index: 1;
 }
 .app-header .abs-full-width-button .dropdown-toggle,
 .app-header .abs-full-width-button .dropdown-menu {
@@ -22,6 +24,16 @@
 }
 
 .app-main {
-  width: 100vw;
   flex: 1 0 auto;
+}
+
+.app-aside {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 1em;
 }
