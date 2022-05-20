@@ -5,12 +5,20 @@
 
 version: 2
 updates:
-  - package-ecosystem: 'npm' # See documentation for possible values
-    directory: '/front-end' # Location of package manifests
+  - package-ecosystem: 'npm'
+    directory: '/front-end'
     schedule:
       interval: 'weekly'
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          ['version-update:semver-minor', 'version-update:semver-patch']
 
-  - package-ecosystem: 'gomod' # See documentation for possible values
-    directory: '/back-end' # Location of package manifests
+  - package-ecosystem: 'gomod'
+    directory: '/back-end'
     schedule:
       interval: 'weekly'
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          ['version-update:semver-minor', 'version-update:semver-patch']
