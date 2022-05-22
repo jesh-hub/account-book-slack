@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import { ErrorContext } from '../common/ErrorContext';
+import { ErrorContext } from '@/common/ErrorContext';
 import { Toast } from 'react-bootstrap';
 
 function ErrorToast(props) {
