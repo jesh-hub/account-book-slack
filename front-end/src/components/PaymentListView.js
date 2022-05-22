@@ -1,5 +1,5 @@
-import './PaymentListView.css';
-import SummaryBySign from './SummaryBySign';
+import '@/components/PaymentListView.css';
+import SummaryBySign from '@/components/SummaryBySign';
 import { BsExclamationCircle } from "react-icons/bs";
 
 function PaymentListView(props) {
