@@ -1,11 +1,11 @@
-import './App.css';
+import '@/App.css';
 import {Dropdown, DropdownButton} from 'react-bootstrap';
 import {useState} from 'react';
-import PaymentListView from './components/PaymentListView';
-import ProcessingSpinner from './common/ProcessingSpinner';
-import SummaryBySign from './components/SummaryBySign';
-import useRequest from './common/useRequest';
-import ErrorLogger from './components/ErrorLogger';
+import PaymentListView from '@/components/PaymentListView';
+import ProcessingSpinner from '@/common/ProcessingSpinner';
+import SummaryBySign from '@/components/SummaryBySign';
+import useRequest from '@/common/useRequest';
+import ErrorLogger from '@/components/ErrorLogger';
 
 function App() {
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());

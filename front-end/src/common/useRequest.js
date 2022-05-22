@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useContext, useEffect, useReducer, useState } from 'react';
-import ErrorContext from './ErrorContext';
+import ErrorContext from '@/common/ErrorContext';
 
 /** @typedef {any} ResponseDataType */
 /**
