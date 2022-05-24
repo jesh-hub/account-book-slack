@@ -6,6 +6,7 @@ import ProcessingSpinner from '@/common/ProcessingSpinner';
 import SummaryBySign from '@/components/SummaryBySign';
 import useRequest from '@/common/useRequest';
 import ErrorLogger from '@/components/ErrorLogger';
+import ErrorContext from '@/common/ErrorContext';
 
 function App() {
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
@@ -50,7 +51,15 @@ function App() {
         {!processing && <PaymentListView payments={payments} />}
       </main>
       <aside className="app-aside">
-        <ErrorLogger />
+        <ErrorContext.Consumer>
+          {
+            value =>
+              <ErrorLogger
+                errors={value.errors}
+                deleteError={value.deleteError}
+              />
+          }
+        </ErrorContext.Consumer>
       </aside>
     </div>
   );

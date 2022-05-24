@@ -23,15 +23,15 @@ function ErrorToast(props) {
   );
 }
 
-function ErrorLogger() {
-  const { errors, deleteError } = useContext(ErrorContext);
+function ErrorLogger(props) {
+  // const { errors, deleteError } = useContext(ErrorContext);
 
   return (
-    errors.map(error =>
+    props.errors.map(error =>
       <ErrorToast
         key={error.id}
         error={error}
-        onToastClose={deleteError}
+        onToastClose={props.deleteError}
       />
     ));
 }
