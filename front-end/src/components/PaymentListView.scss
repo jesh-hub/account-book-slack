@@ -1,0 +1,35 @@
+.abs-payment-list-view {
+  width: 100%;
+  padding: 1em;
+  overflow: auto;
+
+  > p {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .4em;
+  }
+
+  > .abs-payment-list-daily {
+    border: 1px solid lightgrey;
+    border-radius: .5em;
+    padding: .5em;
+    margin: 0 auto;
+    width: 80vw;
+
+    &:not(:first-child) {
+      margin-top: .5em;
+    }
+
+    > ul {
+      list-style: none;
+      margin: 1em 0 0;
+      padding: 0;
+
+      > .abs-payment-item {
+        display: flex;
+        justify-content: space-between;
+      }
+    }
+  }
+}

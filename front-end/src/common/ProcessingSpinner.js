@@ -1,4 +1,4 @@
-import '@/common/ProcessingSpinner.css';
+import '@/common/ProcessingSpinner.scss';
 import {Spinner} from 'react-bootstrap';
 
 function ProcessingSpinner(props) {

@@ -1,4 +1,4 @@
-import '@/App.css';
+import '@/App.scss';
 import {Dropdown, DropdownButton} from 'react-bootstrap';
 import {useState} from 'react';
 import PaymentListView from '@/components/PaymentListView';
