@@ -12,15 +12,17 @@
   width: 80vw;
   background-color: var(--bs-body-bg);
   z-index: 1;
-}
-.app-header .abs-full-width-button .dropdown-toggle,
-.app-header .abs-full-width-button .dropdown-menu {
-  width: 100%;
-}
-.app-header .abs-monthly-summary {
-  margin-top: 1em;
-  position: relative;
-  text-align: right;
+
+  .abs-full-width-button .dropdown-toggle,
+  .abs-full-width-button .dropdown-menu {
+    width: 100%;
+  }
+
+  > .abs-monthly-summary {
+    margin-top: 1em;
+    position: relative;
+    text-align: right;
+  }
 }
 
 .app-main {
