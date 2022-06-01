@@ -42,4 +42,10 @@ jobs:
         
       - name: serverless deploy
         working-directory: ${{ env.working-directory }}
-        run: make deploy
+        run: |
+          CHECK_SLS_CONFIG_CHANGED=`git diff-tree --no-commit-id --name-only -r ${{ github.sha }} | grep -i serverless.yml | wc -l`
+          if [ $CHECK_SLS_CONFIG_CHANGED -gt 0 ]; then
+            make deploy-all
+          else
+            make deploy
+          fi
