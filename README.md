@@ -6,7 +6,7 @@ Slack에 입금, 출금 내역을 채팅으로 입력하면 웹에서 예쁜 UI�
 
 ## Service Domain
 
-[https://jesh-hub.github.io/account-book-slack/](https://jesh-hub.github.io/account-book-slack/)
+[https://jesh-hub.github.io/account-book-slim/](https://jesh-hub.github.io/account-book-slim/)
 
 ## Code Quality
 
