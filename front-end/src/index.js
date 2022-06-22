@@ -5,7 +5,6 @@ import App from '@/App';
 import reportWebVitals from '@/reportWebVitals';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Test from '@/routes/Test';
 
 const container = document.getElementById('root');
 const root = createRoot(container);
@@ -13,7 +12,6 @@ root.render(
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<App tab="home"/>} />
-      <Route path="/test" element={<Test />}/>
     </Routes>
   </BrowserRouter>
 );
