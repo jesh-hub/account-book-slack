@@ -12,6 +12,8 @@ provider:
     slackToken: ${self:custom.environment.slackToken}
     channelId: ${self:custom.environment.channelId}
     botId: ${self:custom.environment.botId}
+    DB_HOST: ${self:custom.environment.DB_HOST}
+    DB_AUTH: ${self:custom.environment.DB_AUTH}
   httpApi:
     cors:
       allowedOrigins:
@@ -26,6 +28,7 @@ custom:
 
 plugins:
   - serverless-go-plugin
+
 functions:
   payments:
     handler: payments/main.go
@@ -33,3 +36,9 @@ functions:
       - httpApi:
           path: /abs/payments
           method: get
+  user_signup:
+    handler: user/signup/main.go
+    events:
+      - httpApi:
+          path: /abs/user
+          method: post

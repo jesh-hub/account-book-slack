@@ -2,8 +2,11 @@ name: Backend CI/CD
 
 on:
   push:
-    branches: [ master ]
-    paths: [ "back-end/**", ".github/workflows/backend-cicd.yml" ]
+    branches: [master]
+    paths: ['back-end/**', '.github/workflows/backend-cicd.yml']
+  pull_request:
+    branches: [master]
+    paths: ['back-end/user/**']
 
 jobs:
   deploy:
@@ -16,7 +19,7 @@ jobs:
       - name: Setup node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "16"
+          node-version: '16'
 
       - name: Install dependencies
         working-directory: ${{ env.working-directory }}
@@ -27,11 +30,18 @@ jobs:
       - name: Create serverless secret file
         working-directory: ${{ env.working-directory }}
         run: touch secret.yml
-        
+
       - name: Update serverless secret file
         uses: mikefarah/yq@v4.25.1
         with:
-          cmd: slackToken=${{ secrets.SLACKTOKEN }} channelId=${{ secrets.CHANNELID }} botId=${{ secrets.BOTID }} yq -i '.slackToken = strenv(slackToken) | .channelId = strenv(channelId) | .botId = strenv(botId)' ${{ env.working-directory }}/secret.yml
+          cmd: |
+            slackToken=${{ secrets.SLACKTOKEN }} channelId=${{ secrets.CHANNELID }} botId=${{ secrets.BOTID }} DB_HOST=${{ secrets.DB_HOST }} DB_AUTH=${{ secrets.DB_AUTH }} yq -i '
+              .slackToken = strenv(slackToken) |
+              .channelId = strenv(channelId) |
+              .botId = strenv(botId) |
+              .DB_HOST = strenv(DB_HOST) |
+              .DB_AUTH = strenv(DB_AUTH)
+            ' ${{ env.working-directory }}/secret.yml
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -39,7 +49,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
-        
+
       - name: serverless deploy
         working-directory: ${{ env.working-directory }}
         run: |
