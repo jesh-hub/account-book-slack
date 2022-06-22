@@ -26,6 +26,7 @@ custom:
 
 plugins:
   - serverless-go-plugin
+
 functions:
   payments:
     handler: payments/main.go
@@ -33,3 +34,9 @@ functions:
       - httpApi:
           path: /abs/payments
           method: get
+  user_signup:
+    handler: user/signup/main.go
+    events:
+      - httpApi:
+          path: /abs/user
+          method: post
