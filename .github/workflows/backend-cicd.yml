@@ -34,7 +34,14 @@ jobs:
       - name: Update serverless secret file
         uses: mikefarah/yq@v4.25.1
         with:
-          cmd: slackToken=${{ secrets.SLACKTOKEN }} channelId=${{ secrets.CHANNELID }} botId=${{ secrets.BOTID }} yq -i '.slackToken = strenv(slackToken) | .channelId = strenv(channelId) | .botId = strenv(botId)' ${{ env.working-directory }}/secret.yml
+          cmd: |
+            slackToken=${{ secrets.SLACKTOKEN }} channelId=${{ secrets.CHANNELID }} botId=${{ secrets.BOTID }} DB_HOST=${{ secrets.DB_HOST }} DB_AUTH=${{ secrets.DB_AUTH }} yq -i '
+              .slackToken = strenv(slackToken) |
+              .channelId = strenv(channelId) |
+              .botId = strenv(botId) |
+              .DB_HOST = strenv(DB_HOST) |
+              .DB_AUTH = strenv(DB_AUTH)
+            ' ${{ env.working-directory }}/secret.yml
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
