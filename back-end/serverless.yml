@@ -12,6 +12,8 @@ provider:
     slackToken: ${self:custom.environment.slackToken}
     channelId: ${self:custom.environment.channelId}
     botId: ${self:custom.environment.botId}
+    DB_HOST: ${self:custom.environment.DB_HOST}
+    DB_AUTH: ${self:custom.environment.DB_AUTH}
   httpApi:
     cors:
       allowedOrigins:
