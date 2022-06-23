@@ -1,0 +1,44 @@
+service: abs-backend
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  architecture: arm64
+  runtime: provided.al2
+  region: ap-northeast-1
+  memorySize: 128
+  timeout: 10
+  environment:
+    slackToken: ${self:custom.environment.slackToken}
+    channelId: ${self:custom.environment.channelId}
+    botId: ${self:custom.environment.botId}
+    DB_HOST: ${self:custom.environment.DB_HOST}
+    DB_AUTH: ${self:custom.environment.DB_AUTH}
+  httpApi:
+    cors:
+      allowedOrigins:
+        - '*'
+
+custom:
+  environment: ${file(secret.yml), file(secret.yml):default}
+  go:
+    cmd: GOOS=linux GOARCH=arm64 go build -ldflags="-s -w" -tags lambda.norpc
+    supportedRuntimes: [ "provided.al2" ]
+    buildProvidedRuntimeAsBootstrap: true
+
+plugins:
+  - serverless-go-plugin
+
+functions:
+  payments:
+    handler: payments/main.go
+    events:
+      - httpApi:
+          path: /abs/payments
+          method: get
+  user_signup:
+    handler: user/signup/main.go
+    events:
+      - httpApi:
+          path: /abs/user
+          method: post
