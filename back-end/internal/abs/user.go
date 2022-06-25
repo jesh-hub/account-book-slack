@@ -1,7 +1,9 @@
 package abs
 
 import (
+	"errors"
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
@@ -14,14 +16,32 @@ type User struct {
 	ModDate primitive.DateTime `json:"modDate" bson:"modDate"`
 }
 
-func Signup(c *gin.Context) {
-	var user User
-	if err := c.BindJSON(&user); err != nil {
+type LoginParameter struct {
+	Credential string `json:"credential"`
+}
+
+func Login(c *gin.Context) {
+	var loginParameter LoginParameter
+	if err := c.BindJSON(&loginParameter); err != nil {
+		errHandlerClient(c, err)
 		return
 	}
 
-	fmt.Println(user.Id)
-	c.JSON(http.StatusOK, gin.H{
-		"data": user,
-	})
+	if len(loginParameter.Credential) == 0 {
+		errHandlerClient(c, errors.New("token is nil"))
+		return
+	}
+
+	token, _ := jwt.Parse(loginParameter.Credential, nil)
+	if token == nil {
+		errorHandlerServer(c, errors.New("cannot parse token"))
+		return
+	}
+
+	claims, _ := token.Claims.(jwt.MapClaims)
+	for key, val := range claims {
+		fmt.Printf("Key: %v, value: %v\n", key, val)
+	}
+
+	c.JSON(http.StatusOK, loginParameter)
 }
