@@ -1,7 +1,7 @@
 package main
 
 import (
-	"abs/pkg/abs"
+	"abs/internal/abs"
 	"github.com/gin-gonic/gin"
 )
 

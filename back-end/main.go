@@ -1,7 +1,7 @@
 package main
 
 import (
-	"abs/pkg/abs"
+	"abs/internal/abs"
 	"context"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
