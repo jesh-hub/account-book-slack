@@ -16,4 +16,4 @@ clean:
 	rm -rf bin/*
 
 serve:
-	go run cmd/app.go
+	cd cmd && go run app.go

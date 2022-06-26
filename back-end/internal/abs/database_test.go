@@ -3,12 +3,11 @@ package abs
 import (
 	"fmt"
 	"github.com/goccy/go-json"
-	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"os"
 	"testing"
+	"time"
 )
 
 type SecretsStruct struct {
@@ -18,79 +17,65 @@ type SecretsStruct struct {
 }
 
 func init() {
-	godotenv.Load()
-	dbUser = DbUser{
-		Host: os.Getenv("DB_HOST"),
-		Auth: os.Getenv("DB_AUTH"),
-		Name: os.Getenv("DB_NAME"),
-	}
+	ConnectDB()
 }
 
 func TestConnect(t *testing.T) {
-	dbUser.Connect()
+	ConnectDB()
 }
 
 func TestInsert(t *testing.T) {
-	client, ctx, cancel := dbUser.Connect()
-	defer client.Disconnect(ctx)
-	defer cancel()
+	user := newUser("choshsh@test.com")
 
-	obj := SecretsStruct{
-		Title: "choshsh123123123",
-		Text:  "1231232132112312312",
-	}
+	collection := GetCollection(DB, "user")
+	result, err := insertOne(collection, user)
+	errorHandlerInternal(err)
 
-	id := insertOne("user", obj)
-
-	fmt.Println(prettyPrint(id))
-	assert.NotEmpty(t, id)
+	fmt.Println(prettyPrint(result))
+	assert.NotEmpty(t, result)
 }
 
 func TestFindOne(t *testing.T) {
-	client, ctx, cancel := dbUser.Connect()
-	defer client.Disconnect(ctx)
-	defer cancel()
+	email := "choshsh@test.com"
 
-	var result SecretsStruct
+	var result User
 
 	findOptions := FindOptions{
-		Filter: bson.D{{"title", "choshsh123123123"}},
+		Filter: bson.D{{"_id", email}},
 	}
-	findOne("user", findOptions, &result)
+	collection := GetCollection(DB, "user")
+	findOne(collection, findOptions, &result)
 
 	fmt.Println(prettyPrint(result))
-	assert.NotEmpty(t, result.Text)
+	assert.NotEmpty(t, result.Id)
 }
 
 func TestFindOneByOptions(t *testing.T) {
-	client, ctx, cancel := dbUser.Connect()
-	defer client.Disconnect(ctx)
-	defer cancel()
+	email := "choshsh@test.com"
+	var result User
 
-	var result SecretsStruct
-
+	collection := GetCollection(DB, "user")
 	findOptions := FindOptions{
-		Filter: bson.D{{"title", "choshsh123123123"}},
-		Opts:   bson.D{{"text", 0}},
+		Filter: bson.D{{"_id", email}},
+		Opts:   bson.D{{"regDate", 0}},
 	}
-	findOne("user", findOptions, &result)
+	findOne(collection, findOptions, &result)
 
 	fmt.Println(prettyPrint(result))
 	assert.NotEmpty(t, result)
 }
 
 func TestFindMany(t *testing.T) {
-	client, ctx, cancel := dbUser.Connect()
-	defer client.Disconnect(ctx)
-	defer cancel()
+	var result []User
 
-	var result []SecretsStruct
-
+	collection := GetCollection(DB, "user")
 	findOptions := FindOptions{
-		Filter: bson.D{{"title", "choshsh123123123"}},
-		Opts:   nil,
+		Filter: bson.M{
+			"regDate": bson.M{"$gte": primitive.NewDateTimeFromTime(time.Now().Add(-9 * time.Hour))},
+		},
+		Opts: nil,
 	}
-	findMany("user", findOptions, &result)
+	findMany(collection, findOptions, &result)
 
 	fmt.Println(prettyPrint(result))
 	assert.Greater(t, len(result), 0)

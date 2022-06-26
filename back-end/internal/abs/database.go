@@ -1,6 +1,7 @@
 package abs
 
 import (
+	"abs/pkg/util"
 	"context"
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
@@ -11,29 +12,27 @@ import (
 	"time"
 )
 
-type DbUser struct {
-	Host string
-	Auth string
-	Name string
-}
-
 type FindOptions struct {
-	Filter bson.D
-	Opts   bson.D
+	Filter interface{}
+	Opts   interface{}
 }
 
-var dbUser DbUser
+var DB = ConnectDB()
+var dbName string
 
-// connect
-func (du *DbUser) Connect() (*mongo.Client, context.Context, context.CancelFunc) {
-	uri := "mongodb+srv://" + du.Auth + "@" + du.Host + "/?retryWrites=true&w=majority"
+func ConnectDB() *mongo.Client {
+	host := util.GodotEnv("DB_HOST")
+	auth := util.GodotEnv("DB_AUTH")
+	dbName = util.GodotEnv("DB_NAME")
+
+	uri := "mongodb+srv://" + auth + "@" + host + "/?retryWrites=true&w=majority"
 	serverAPIOptions := options.ServerAPI(options.ServerAPIVersion1)
 	clientOptions := options.Client().ApplyURI(uri).SetServerAPIOptions(serverAPIOptions)
 
 	// Timeout 설정을 위한 Context생성
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 	client, err := mongo.Connect(ctx, clientOptions)
-	errorHandler(err)
+	errorHandlerInternal(err)
 
 	// Ping the primary
 	if err := client.Ping(context.TODO(), readpref.Primary()); err != nil {
@@ -41,16 +40,18 @@ func (du *DbUser) Connect() (*mongo.Client, context.Context, context.CancelFunc)
 	}
 
 	fmt.Println("Successfully connected and pinged.")
-	return client, ctx, cancel
+	return client
+}
+
+func GetCollection(client *mongo.Client, collectionName string) *mongo.Collection {
+	collection := client.Database(dbName).Collection(collectionName)
+	return collection
 }
 
 // findOne
-func findOne(collection string, findOptions FindOptions, result interface{}) {
-	client, ctx, cancel := dbUser.Connect()
-	defer client.Disconnect(ctx)
+func findOne(collection *mongo.Collection, findOptions FindOptions, result interface{}) error {
+	ctx, cancel := context.WithTimeout(context.Background(), DB_TIMEOUT)
 	defer cancel()
-
-	coll := client.Database(dbUser.Name).Collection(collection)
 
 	var opts *options.FindOneOptions
 	if findOptions.Opts != nil {
@@ -58,17 +59,14 @@ func findOne(collection string, findOptions FindOptions, result interface{}) {
 	} else {
 		opts = nil
 	}
-	err := coll.FindOne(ctx, findOptions.Filter, opts).Decode(result)
-	errorHandler(err)
+	err := collection.FindOne(ctx, findOptions.Filter, opts).Decode(result)
+	return err
 }
 
 // findMany
-func findMany(collection string, findOptions FindOptions, result interface{}) {
-	client, ctx, cancel := dbUser.Connect()
-	defer client.Disconnect(ctx)
+func findMany(collection *mongo.Collection, findOptions FindOptions, result interface{}) error {
+	ctx, cancel := context.WithTimeout(context.Background(), DB_TIMEOUT)
 	defer cancel()
-
-	coll := client.Database(dbUser.Name).Collection(collection)
 
 	var opts *options.FindOptions
 	if findOptions.Opts != nil {
@@ -76,62 +74,54 @@ func findMany(collection string, findOptions FindOptions, result interface{}) {
 	} else {
 		opts = nil
 	}
-	cursor, err := coll.Find(ctx, findOptions.Filter, opts)
-	errorHandler(err)
+	cursor, err := collection.Find(ctx, findOptions.Filter, opts)
+	if err != nil {
+		return err
+	}
 
 	err = cursor.All(context.TODO(), result)
-	errorHandler(err)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // insertOne
-func insertOne(collection string, data interface{}) interface{} {
-	client, ctx, cancel := dbUser.Connect()
-	defer client.Disconnect(ctx)
+func insertOne(collection *mongo.Collection, data interface{}) (interface{}, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), DB_TIMEOUT)
 	defer cancel()
 
-	coll := client.Database(dbUser.Name).Collection(collection)
-	result, err := coll.InsertOne(ctx, data)
-	errorHandler(err)
-
-	return result.InsertedID
+	result, err := collection.InsertOne(ctx, data)
+	return result.InsertedID, err
 }
 
 // insertMany
-func insertMany(collection string, data ...interface{}) []interface{} {
-	client, ctx, cancel := dbUser.Connect()
-	defer client.Disconnect(ctx)
+func insertMany(collection *mongo.Collection, data ...interface{}) ([]interface{}, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), DB_TIMEOUT)
 	defer cancel()
 
-	coll := client.Database(dbUser.Name).Collection(collection)
-	result, err := coll.InsertMany(ctx, data)
-	errorHandler(err)
-
-	return result.InsertedIDs
+	result, err := collection.InsertMany(ctx, data)
+	return result.InsertedIDs, err
 }
 
 // updateOne
-func updateOne(collection string, id string, data interface{}) interface{} {
-	client, ctx, cancel := dbUser.Connect()
-	defer client.Disconnect(ctx)
+func updateOne(collection *mongo.Collection, id string, data interface{}) (*mongo.UpdateResult, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), DB_TIMEOUT)
 	defer cancel()
 
-	coll := client.Database(dbUser.Name).Collection(collection)
-	result, err := coll.UpdateByID(ctx, id, data)
-	errorHandler(err)
+	update := bson.M{"$set": data}
+	result, err := collection.UpdateByID(ctx, id, update)
 
-	return result.UpsertedID
+	return result, err
 }
 
 // deleteOne
-func deleteOne(collection string, id string) int64 {
-	client, ctx, cancel := dbUser.Connect()
-	defer client.Disconnect(ctx)
+func deleteOne(collection *mongo.Collection, id string) (int64, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), DB_TIMEOUT)
 	defer cancel()
 
 	objectId, _ := primitive.ObjectIDFromHex(id)
-	coll := client.Database(dbUser.Name).Collection(collection)
-	result, err := coll.DeleteOne(ctx, bson.M{"_id": objectId})
-	errorHandler(err)
+	result, err := collection.DeleteOne(ctx, bson.M{"_id": objectId})
 
-	return result.DeletedCount
+	return result.DeletedCount, err
 }
