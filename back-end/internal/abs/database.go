@@ -96,7 +96,7 @@ func insertOne(collection *mongo.Collection, data interface{}) (interface{}, err
 }
 
 // insertMany
-func insertMany(collection *mongo.Collection, data ...interface{}) ([]interface{}, error) {
+func insertMany(collection *mongo.Collection, data []interface{}) ([]interface{}, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), DB_TIMEOUT)
 	defer cancel()
 
@@ -111,6 +111,15 @@ func updateOne(collection *mongo.Collection, id string, data interface{}) (*mong
 
 	update := bson.M{"$set": data}
 	result, err := collection.UpdateByID(ctx, id, update)
+
+	return result, err
+}
+
+func replaceOne(collection *mongo.Collection, id interface{}, data interface{}) (*mongo.UpdateResult, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), DB_TIMEOUT)
+	defer cancel()
+
+	result, err := collection.ReplaceOne(ctx, bson.M{"_id": id}, data)
 
 	return result, err
 }
