@@ -1,17 +1,20 @@
-.PHONY: invoke-local invoke-local deploy deploy-all
+.PHONY: build deploy deploy-all clean serve
 
-export APP_NAME=payments
-export APP_NAME_USER=user_signup
+export APP_NAME=abs
+export BIN_DIR=bin
 
-invoke-local:
-	sls invoke local -f ${APP_NAME} --verbose
+build: clean
+	GOOS=linux GOARCH=amd64 go build -ldflags '-d -s -w' -o ${BIN_DIR}/${APP_NAME} main.go
 
-invoke-remote:
-	sls invoke -f ${APP_NAME} --log
-
-deploy:
+deploy: build
 	sls deploy -f ${APP_NAME} --verbose
 	sls deploy -f ${APP_NAME_USER} --verbose
 
-deploy-all:
+deploy-all: build
 	sls deploy --verbose
+
+clean:
+	rm -rf bin/*
+
+serve:
+	cd cmd && go run app.go

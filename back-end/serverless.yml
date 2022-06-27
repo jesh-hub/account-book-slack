@@ -1,11 +1,11 @@
-service: abs-backend
+service: abs
 frameworkVersion: '3'
 
 provider:
   name: aws
-  architecture: arm64
-  runtime: provided.al2
   region: ap-northeast-1
+  architecture: x86_64
+  runtime: go1.x
   memorySize: 128
   timeout: 10
   environment:
@@ -14,31 +14,21 @@ provider:
     botId: ${self:custom.environment.botId}
     DB_HOST: ${self:custom.environment.DB_HOST}
     DB_AUTH: ${self:custom.environment.DB_AUTH}
-  httpApi:
-    cors:
-      allowedOrigins:
-        - '*'
+    DB_NAME: ${self:custom.environment.DB_Name}
 
 custom:
   environment: ${file(secret.yml), file(secret.yml):default}
-  go:
-    cmd: GOOS=linux GOARCH=arm64 go build -ldflags="-s -w" -tags lambda.norpc
-    supportedRuntimes: [ "provided.al2" ]
-    buildProvidedRuntimeAsBootstrap: true
 
-plugins:
-  - serverless-go-plugin
+package:
+  exclude:
+    - ./**
+  include:
+    - ./bin/**
 
 functions:
-  payments:
-    handler: payments/main.go
+  abs:
+    handler: bin/abs
     events:
-      - httpApi:
-          path: /abs/payments
-          method: get
-  user_signup:
-    handler: user/signup/main.go
-    events:
-      - httpApi:
-          path: /abs/user
-          method: post
+      - http:
+          path: /{proxy+}
+          method: any
