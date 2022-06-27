@@ -8,6 +8,7 @@ build: clean
 
 deploy: build
 	sls deploy -f ${APP_NAME} --verbose
+	sls deploy -f ${APP_NAME_USER} --verbose
 
 deploy-all: build
 	sls deploy --verbose
