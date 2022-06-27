@@ -11,14 +11,10 @@ import (
 	"time"
 )
 
-const (
-	USER_COLL = "user"
-)
-
 var userCollection = GetCollection(DB, "user")
 
 type User struct {
-	Id        string             `json:"id" bson:"_id"`
+	Email     string             `json:"id" bson:"_id" binding:"required"`
 	FirstName string             `json:"firstName"`
 	LastName  string             `json:"lastName"`
 	Picture   string             `json:"picture"`
@@ -32,7 +28,7 @@ type LoginParameter struct {
 
 func Login(c *gin.Context) {
 	var loginParameter LoginParameter
-	if err := c.BindJSON(&loginParameter); err != nil {
+	if err := c.ShouldBindJSON(&loginParameter); err != nil {
 		errorHandler(c, 400, err)
 		return
 	}
@@ -54,6 +50,7 @@ func Login(c *gin.Context) {
 	}
 	if err != nil {
 		errorHandler(c, 500, err)
+		return
 	}
 
 	// Set value(name, picture) from google
@@ -82,7 +79,7 @@ func findUserByEmail(email string) (User, error) {
 
 func newUser(email string) User {
 	return User{
-		Id:      email,
+		Email:   email,
 		RegDate: primitive.NewDateTimeFromTime(time.Now()),
 		ModDate: primitive.NewDateTimeFromTime(time.Now()),
 	}
