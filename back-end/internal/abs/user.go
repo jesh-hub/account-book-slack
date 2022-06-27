@@ -3,7 +3,6 @@ package abs
 import (
 	"errors"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -58,7 +57,7 @@ func Login(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
-func addUser(claims jwt.MapClaims) string {
+func addUser(claims map[string]interface{}) string {
 	user := newUser(fmt.Sprintf("%v", claims["email"]))
 	id, _ := insertOne(userCollection, user)
 	return fmt.Sprintf("%v", id)
@@ -85,7 +84,7 @@ func newUser(email string) User {
 	}
 }
 
-func setUserinfo(user User, claims jwt.MapClaims) User {
+func setUserinfo(user User, claims map[string]interface{}) User {
 	user.FirstName = fmt.Sprintf("%v", claims["family_name"])
 	user.LastName = fmt.Sprintf("%v", claims["given_name"])
 	user.Picture = fmt.Sprintf("%v", claims["picture"])

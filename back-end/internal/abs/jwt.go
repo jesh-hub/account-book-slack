@@ -2,7 +2,7 @@ package abs
 
 import (
 	"errors"
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v4"
 )
 
 func JwtDecode(credential string) (jwt.MapClaims, error) {

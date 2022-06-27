@@ -6,9 +6,9 @@ require (
 	github.com/aws/aws-lambda-go v1.32.0
 	github.com/awslabs/aws-lambda-go-api-proxy v0.13.3
 	github.com/cloudflare/ahocorasick v0.0.0-20210425175752-730270c3e184
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.8.1
 	github.com/goccy/go-json v0.9.7
+	github.com/golang-jwt/jwt/v4 v4.4.2
 	github.com/joho/godotenv v1.4.0
 	go.mongodb.org/mongo-driver v1.9.1
 )
@@ -34,9 +34,9 @@ require (
 	github.com/xdg-go/stringprep v1.0.3 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a // indirect
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d // indirect
-	golang.org/x/net v0.0.0-20220622184535-263ec571b305 // indirect
+	golang.org/x/net v0.0.0-20220624214902-1bab6f366d9e // indirect
 	golang.org/x/sync v0.0.0-20220601150217-0de741cfad7f // indirect
-	golang.org/x/sys v0.0.0-20220622161953-175b2fd9d664 // indirect
+	golang.org/x/sys v0.0.0-20220624220833-87e55d714810 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
