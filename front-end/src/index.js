@@ -2,6 +2,7 @@ import React from 'react';
 import '@/index.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import App from '@/App';
+import LoginApp from '@/LoginApp';
 import reportWebVitals from '@/reportWebVitals';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
@@ -12,6 +13,7 @@ root.render(
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<App tab="home"/>} />
+      <Route path="/login" element={<LoginApp />} />
     </Routes>
   </BrowserRouter>
 );
