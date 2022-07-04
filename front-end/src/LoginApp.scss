@@ -1,10 +1,14 @@
 .login-app {
-  > .login-app-main {
+  > .app-main {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     margin-top: 40vh;
     position: relative;
+
+    > .login-guide {
+      font-weight: bold;
+    }
   }
 }

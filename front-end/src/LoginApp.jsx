@@ -1,15 +1,28 @@
 import '@/LoginApp.scss';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import ProcessingSpinner from '@/common/ProcessingSpinner';
 
+const GoogleSrc = 'https://accounts.google.com/gsi/client';
+
 function LoginApp() {
-  async function handleCredentialResponse(response) {
-    console.log(response);
+  const [processing, setProcessing] = useState(false);
+
+  async function handleCredentialResponse({ credential }) {
+    setProcessing(true);
+    try {
+      const res = await axios.post(`${process.env.REACT_APP_ABS}/v1/login`, { credential });
+      console.log(res);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setProcessing(false);
+    }
   }
 
   useEffect(() => {
     const js = document.createElement('script');
-    js.src = 'https://accounts.google.com/gsi/client';
+    js.src = GoogleSrc;
     js.onerror = () => console.log('error');
     js.onload = () => {
       window.google.accounts.id.initialize({
@@ -18,9 +31,16 @@ function LoginApp() {
       });
       window.google.accounts.id.renderButton(
         document.getElementById('buttonDiv'),
-        { theme: 'outline', size: 'large' }
+        {
+          theme: 'outline',
+          shape: 'pill',
+          type: 'standard',
+          text: 'continue_with',
+          size: 'large'
+        }
       );
       window.google.accounts.id.prompt();
+      document.head.removeChild(js);
     };
 
     document.head.appendChild(js);
@@ -28,11 +48,12 @@ function LoginApp() {
 
   return (
     <div className="login-app">
-      <main className="login-app-main">
+      <main className="app-main">
         <p>
-          로그인을 해주세요!
+          <b>로그인</b>을 해주세요!
         </p>
         <div id="buttonDiv" />
+        <ProcessingSpinner processing={processing} />
       </main>
     </div>
   );
