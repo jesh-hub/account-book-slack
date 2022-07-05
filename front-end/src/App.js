@@ -1,5 +1,6 @@
-import '@/App.scss';
+import '@/_bak/OldApp.scss';
 import Login from '@/pages/Login';
+import OldApp from '@/_bak/OldApp';
 import { useState } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
@@ -21,7 +22,9 @@ function App() {
     <div className="app">
       <BrowserRouter>
         <Routes>
-          {/*<Route path="/" element={<App tab="home"/>} />*/}
+          {/*<Route path="/group" element={<App tab="/ikd"/>} />*/}
+          <Route path="/old" element={<OldApp tab="/home"/>} />
+          <Route path="*" element={<Navigate replace to="/old" />} />
         </Routes>
       </BrowserRouter>
     </div>);
