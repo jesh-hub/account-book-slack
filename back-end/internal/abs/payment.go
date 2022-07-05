@@ -3,16 +3,14 @@ package abs
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 )
 
-var paymentCollection = GetCollection(DB, "payment")
-var paymentMethodCollection = GetCollection(DB, "paymentMethod")
-
 type Payment struct {
-	Id                 primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
+	mgm.DefaultModel   `bson:",inline"`
 	Date               primitive.DateTime `json:"date" bson:"date" binding:"required"`
 	Name               string             `json:"name" bson:"name" binding:"required"`
 	Category           string             `json:"category" bson:"category"`
@@ -20,65 +18,49 @@ type Payment struct {
 	Price              int                `json:"price" bson:"price" binding:"required"`
 	MonthlyInstallment int                `json:"monthlyInstallment" bson:"monthlyInstallment"`
 	RegUserId          string             `json:"regUserId" json:"regUserId"`
-	RegDate            primitive.DateTime `json:"regDate" bson:"regDate"`
 	ModUserId          string             `json:"modUserId" bson:"modUserId"`
-	ModDate            primitive.DateTime `json:"modDate" bson:"modDate"`
 	GroupId            primitive.ObjectID `json:"group" bson:"group" binding:"required"`
 }
 
 type PaymentMethod struct {
-	Id      primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
-	Name    string             `json:"name" bson:"name" binding:"required"`
-	Default bool               `json:"default" bson:"default"`
-	GroupId primitive.ObjectID `json:"groupId" bson:"groupId" binding:"required"`
-}
-
-func newPaymentMethod(name string, groupId primitive.ObjectID) PaymentMethod {
-	return PaymentMethod{
-		Name:    name,
-		Default: false,
-		GroupId: groupId,
-	}
+	mgm.DefaultModel `bson:",inline"`
+	Name             string             `json:"name" bson:"name" binding:"required"`
+	Default          bool               `json:"default" bson:"default"`
+	GroupId          primitive.ObjectID `json:"groupId" bson:"groupId" binding:"required"`
 }
 
 func AddPaymentMethod(c *gin.Context) {
-	var paymentMethod PaymentMethod
-	if err := c.ShouldBindJSON(&paymentMethod); err != nil {
+	paymentMethod := &PaymentMethod{}
+	if err := c.ShouldBindJSON(paymentMethod); err != nil {
 		errorHandler(c, 400, err)
 		return
 	}
 
-	result, err := insertOne(paymentMethodCollection, paymentMethod)
+	paymentMethodColl := mgm.Coll(&PaymentMethod{})
+	err := paymentMethodColl.Create(paymentMethod)
 	if err != nil {
-		errorHandler(c, 400, err)
+		errorHandler(c, 500, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, paymentMethod)
 }
 
 func FindPaymentMethodByGroupId(c *gin.Context) {
-	id := c.Query("groupId")
-	if len(id) == 0 {
+	groupId := c.Query("groupId")
+	if len(groupId) == 0 {
 		errorHandler(c, 400, errors.New("groupId is required in parameter"))
 		return
 	}
-	groupId, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		errorHandler(c, 400, err)
-		return
-	}
 
-	var paymentMethods []PaymentMethod
-	findOptions := FindOptions{
-		Filter: bson.M{"groupId": groupId},
-	}
-	err = findMany(paymentMethodCollection, findOptions, &paymentMethods)
+	paymentMethodColl := mgm.Coll(&PaymentMethod{})
+	paymentMethods := &[]PaymentMethod{}
+	err := paymentMethodColl.SimpleFind(paymentMethods, bson.M{"groupId": groupId})
+
 	if err != nil {
-		errorHandler(c, 400, err)
+		errorHandler(c, 500, err)
 		return
 	}
 
 	c.JSON(http.StatusOK, paymentMethods)
-
 }
