@@ -15,9 +15,7 @@ func init() {
 	// run server
 	r := gin.Default()
 	abs.NewAbsRouterV1(r)
-	if err := r.Run(":8080"); err != nil {
-		return
-	}
+	ginLambda = ginadapter.New(r)
 }
 
 func Handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
