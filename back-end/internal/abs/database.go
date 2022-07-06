@@ -13,21 +13,4 @@ func init() {
 
 	err := mgm.SetDefaultConfig(nil, dbName, options.Client().ApplyURI("mongodb+srv://"+auth+"@"+host+"/?retryWrites=true&w=majority"))
 	errorHandlerInternal(err)
-	//
-	//uri := "mongodb+srv://" + auth + "@" + host + "/?retryWrites=true&w=majority"
-	//serverAPIOptions := options.ServerAPI(options.ServerAPIVersion1)
-	//clientOptions := options.Client().ApplyURI(uri).SetServerAPIOptions(serverAPIOptions)
-	//
-	//// Timeout 설정을 위한 Context생성
-	//ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
-	//client, err := mongo.Connect(ctx, clientOptions)
-	//errorHandlerInternal(err)
-	//
-	//// Ping the primary
-	//if err := client.Ping(context.TODO(), readpref.Primary()); err != nil {
-	//	panic(err)
-	//}
-	//
-	//fmt.Println("Successfully connected and pinged.")
-	//return client
 }
