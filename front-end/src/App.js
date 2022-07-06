@@ -1,4 +1,4 @@
-import '@/_bak/OldApp.scss';
+import '@/App.scss';
 import Login from '@/pages/Login';
 import OldApp from '@/_bak/OldApp';
 import { useState } from 'react';
@@ -6,23 +6,24 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 /**
  * @typedef {Object} UserInfo
- * @property {string} id
+ * @property {string} id - email 형식
  * @property {string} firstName
  * @property {string} lastName
  * @property {string} picture
- * @property {string} modDate
- * @property {string} regDate
+ * @property {Date} modDate - Korea Standard Time
+ * @property {Date} regDate - Korea Standard Time
  */
 
 function App() {
-  const [userInfo, setUserInfo] = useState();
+  const _userInfo = window.localStorage.getItem('ABS_userInfo');
+  const [userInfo, setUserInfo] = useState(JSON.parse(_userInfo) || undefined);
+
   if (userInfo === undefined)
     return <Login setUserInfo={setUserInfo} />;
   return (
-    <div className="app">
+    <div className="abs-app">
       <BrowserRouter>
         <Routes>
-          {/*<Route path="/group" element={<App tab="/ikd"/>} />*/}
           <Route path="/old" element={<OldApp tab="/home"/>} />
           <Route path="*" element={<Navigate replace to="/old" />} />
         </Routes>

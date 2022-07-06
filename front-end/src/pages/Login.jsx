@@ -15,7 +15,16 @@ export default function Login(props) {
     setProcessing(true);
     try {
       const { data } = await axios.post(`${process.env.REACT_APP_ABS}/v1/login`, { credential });
-      props.setUserInfo(data);
+      const userInfo = {
+        id: data.id,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        picture: data.picture,
+        modDate: new Date(data.modDate),
+        regDate: new Date(data.regDate)
+      };
+      window.localStorage.setItem('ABS_userInfo', JSON.stringify(userInfo));
+      props.setUserInfo(userInfo);
     } catch (e) {
       addError(e);
     } finally {
@@ -45,7 +54,6 @@ export default function Login(props) {
       window.google.accounts.id.prompt();
       document.head.removeChild(js);
     };
-
     document.head.appendChild(js);
   }, []);
 

@@ -29,7 +29,7 @@ function OldApp() {
     '/payments', { start, end }, [currentMonth], []);
 
   return (
-    <div className="app">
+    <div className="old-app">
       <header className="app-header">
         <DropdownButton
           className="abs-full-width-button"
