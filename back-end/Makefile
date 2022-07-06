@@ -4,7 +4,7 @@ export APP_NAME=abs
 export BIN_DIR=bin
 
 build: clean
-	GOOS=linux GOARCH=amd64 go build -ldflags '-d -s -w' -o ${BIN_DIR}/${APP_NAME} main.go
+	GOOS=linux GOARCH=amd64 go build -ldflags '-s -w' -o ${BIN_DIR}/${APP_NAME} main.go
 
 clean:
 	rm -rf bin/*
