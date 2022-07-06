@@ -1,9 +1,9 @@
 {
   "scripts": {
-    "deploy-all:dev": "sls deploy -s dev --verbose",
-    "deploy-all:prod": "sls deploy -s prod --verbose",
-    "deploy:dev": "sls deploy -f abs -s dev --verbose",
-    "deploy:prod": "sls deploy -f abs -s prod --verbose"
+    "deploy-all:dev": "sls deploy -s dev",
+    "deploy-all:prod": "sls deploy -s prod",
+    "deploy:dev": "sls deploy -f abs -s dev",
+    "deploy:prod": "sls deploy -f abs -s prod"
   },
   "devDependencies": {
     "serverless": "^3.19.0"

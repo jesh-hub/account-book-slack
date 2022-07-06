@@ -14,7 +14,7 @@ provider:
     DB_HOST: ${env:DB_HOST}
     DB_AUTH: ${env:DB_AUTH}
     DB_NAME: ${env:DB_NAME}
-    GO_ENV: ${env:GO_ENV}
+    GO_ENV: production
 
 package:
   exclude:
