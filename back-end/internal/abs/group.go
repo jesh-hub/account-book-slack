@@ -3,22 +3,17 @@ package abs
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
-	"time"
 )
 
-var groupCollection = GetCollection(DB, "group")
-
 type Group struct {
-	Id        primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
-	Name      string             `json:"name" bson:"name" binding:"required"`
-	Users     []string           `json:"users" bson:"users" binding:"required"`
-	RegUserId string             `json:"regUserId" bson:"regUserId"`
-	RegDate   primitive.DateTime `json:"regDate" bson:"regDate"`
-	ModUserId string             `json:"modUserId" bson:"modUserId"`
-	ModDate   primitive.DateTime `json:"modDate" bson:"modDate"`
+	mgm.DefaultModel `bson:",inline"`
+	Name             string   `json:"name" bson:"name" binding:"required"`
+	Users            []string `json:"users" bson:"users" binding:"required"`
+	RegUserId        string   `json:"regUserId" bson:"regUserId"`
+	ModUserId        string   `json:"modUserId" bson:"modUserId"`
 }
 
 func newGroup(name string, users []string, regUserId string) Group {
@@ -26,34 +21,22 @@ func newGroup(name string, users []string, regUserId string) Group {
 		Name:      name,
 		Users:     users,
 		RegUserId: regUserId,
-		RegDate:   primitive.NewDateTimeFromTime(time.Now()),
 		ModUserId: "",
-		ModDate:   primitive.NewDateTimeFromTime(time.Now()),
 	}
 }
 
 func FindGroupById(c *gin.Context) {
-	id := c.Param("id")
-	if len(id) == 0 {
+	groupId := c.Param("id")
+	if len(groupId) == 0 {
 		errorHandler(c, 400, errors.New("invalid parameter"))
 		return
 	}
-	groupId, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		errorHandler(c, 400, err)
-		return
-	}
 
-	var groups []Group
-	findOptions := FindOptions{
-		Filter: bson.M{"_id": groupId},
-	}
-	if err = findMany(groupCollection, findOptions, &groups); err != nil {
-		errorHandler(c, 400, err)
-		return
-	}
+	groupColl := mgm.Coll(&Group{})
+	group := &Group{}
+	_ = groupColl.FindByID(groupId, group)
 
-	c.JSON(http.StatusOK, groups)
+	c.JSON(http.StatusOK, group)
 }
 
 func FindGroupByEmail(c *gin.Context) {
@@ -63,54 +46,49 @@ func FindGroupByEmail(c *gin.Context) {
 		return
 	}
 
-	var groups []Group
-	findOptions := FindOptions{
-		Filter: bson.M{"users": email},
-	}
-	if err := findMany(groupCollection, findOptions, &groups); err != nil {
-		errorHandler(c, 400, err)
-		return
-	}
+	groupColl := mgm.Coll(&Group{})
+	groups := &[]Group{}
+	_ = groupColl.SimpleFind(groups, bson.M{"users": email})
 
 	c.JSON(http.StatusOK, groups)
 }
 
 func AddGroup(c *gin.Context) {
-	var group Group
+	group := &Group{}
 	if err := c.ShouldBindJSON(&group); err != nil {
 		errorHandler(c, 400, err)
 		return
 	}
 
-	result, err := insertOne(groupCollection, group)
+	groupColl := mgm.Coll(&Group{})
+	err := groupColl.Create(group)
 	if err != nil {
 		errorHandler(c, 400, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, *group)
 }
 
 func UpdateGroup(c *gin.Context) {
 	id := c.Param("id")
-	groupId, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		errorHandler(c, 400, err)
+	if len(id) == 0 {
+		errorHandler(c, 400, errors.New("parameter is invalid"))
 		return
 	}
 
-	var group Group
+	groupColl := mgm.Coll(&Group{})
+	group := &Group{}
 	if err := c.ShouldBindJSON(&group); err != nil {
 		errorHandler(c, 400, err)
 		return
 	}
 
-	group.ModDate = primitive.NewDateTimeFromTime(time.Now())
-	result, err := replaceOne(groupCollection, groupId, group)
+	err := groupColl.Update(group)
 	if err != nil {
 		errorHandler(c, 400, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, group)
 }

@@ -1,24 +1,20 @@
 package abs
 
 import (
-	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"net/http"
-	"time"
 )
 
-var userCollection = GetCollection(DB, "user")
-
 type User struct {
-	Email     string             `json:"id" bson:"_id" binding:"required"`
-	FirstName string             `json:"firstName"`
-	LastName  string             `json:"lastName"`
-	Picture   string             `json:"picture"`
-	RegDate   primitive.DateTime `json:"regDate" bson:"regDate" `
-	ModDate   primitive.DateTime `json:"modDate" bson:"modDate"`
+	mgm.DefaultModel `bson:",inline"`
+	Email            string `json:"email" bson:"email" binding:"required"`
+	FirstName        string `json:"firstName"`
+	LastName         string `json:"lastName"`
+	Picture          string `json:"picture"`
 }
 
 type LoginParameter struct {
@@ -39,16 +35,16 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	email := fmt.Sprintf("%v", claims["email"])
 	// Check user is already exist
-	user, err := findUserByEmail(email)
-	if err != nil {
-		// if user is not exist, add new user
-		id := addUser(claims)
-		user, err = findUserByEmail(id)
+	email := fmt.Sprintf("%v", claims["email"])
+	userColl := mgm.Coll(&User{})
+	user := &User{}
+	err = userColl.First(bson.M{"email": email}, user)
+	if err == mongo.ErrNoDocuments {
+		err = userColl.Create(user)
 	}
 	if err != nil {
-		errorHandler(c, 500, err)
+		errorHandler(c, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -57,34 +53,7 @@ func Login(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
-func addUser(claims map[string]interface{}) string {
-	user := newUser(fmt.Sprintf("%v", claims["email"]))
-	id, _ := insertOne(userCollection, user)
-	return fmt.Sprintf("%v", id)
-}
-
-func findUserByEmail(email string) (User, error) {
-	var user User
-
-	findOptions := FindOptions{
-		Filter: bson.D{{"_id", email}},
-	}
-	err := findOne(userCollection, findOptions, &user)
-	if user == (User{}) {
-		err = errors.New(fmt.Sprintf("User(%s) is not existed\n", email))
-	}
-	return user, err
-}
-
-func newUser(email string) User {
-	return User{
-		Email:   email,
-		RegDate: primitive.NewDateTimeFromTime(time.Now()),
-		ModDate: primitive.NewDateTimeFromTime(time.Now()),
-	}
-}
-
-func setUserinfo(user User, claims map[string]interface{}) User {
+func setUserinfo(user *User, claims map[string]interface{}) *User {
 	user.FirstName = fmt.Sprintf("%v", claims["family_name"])
 	user.LastName = fmt.Sprintf("%v", claims["given_name"])
 	user.Picture = fmt.Sprintf("%v", claims["picture"])

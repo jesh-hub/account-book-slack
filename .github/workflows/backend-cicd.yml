@@ -6,7 +6,7 @@ on:
     paths: ['back-end/**', '.github/workflows/backend-cicd.yml']
   pull_request:
     branches: [master]
-    paths: ['back-end/user/**']
+    paths: ['back-end/**', '.github/workflows/backend-cicd.yml']
 
 jobs:
   deploy:
@@ -21,27 +21,36 @@ jobs:
         with:
           node-version: '16'
 
-      - name: Install dependencies
-        working-directory: ${{ env.working-directory }}
-        run: |
-          npm i -g serverless
-          npm ci
-
-      - name: Create serverless secret file
-        working-directory: ${{ env.working-directory }}
-        run: touch secret.yml
-
-      - name: Update serverless secret file
-        uses: mikefarah/yq@v4.25.1
+      - uses: actions/cache@v3
+        id: yarn-cache
         with:
-          cmd: |
-            slackToken=${{ secrets.SLACKTOKEN }} channelId=${{ secrets.CHANNELID }} botId=${{ secrets.BOTID }} DB_HOST=${{ secrets.DB_HOST }} DB_AUTH=${{ secrets.DB_AUTH }} yq -i '
-              .slackToken = strenv(slackToken) |
-              .channelId = strenv(channelId) |
-              .botId = strenv(botId) |
-              .DB_HOST = strenv(DB_HOST) |
-              .DB_AUTH = strenv(DB_AUTH)
-            ' ${{ env.working-directory }}/secret.yml
+          path: ${{ env.working-directory }}/node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-nodemodules-
+
+      - name: Install dependencies
+        if: ${{ steps.yarn-cache.outputs.cache-hit != 'true' }}
+        working-directory: ${{ env.working-directory }}
+        run: yarn install --frozen-lockfile
+
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '1.18'
+          check-latest: true
+
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Build
+        working-directory: ${{ env.working-directory }}
+        run: make build
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -52,10 +61,14 @@ jobs:
 
       - name: serverless deploy
         working-directory: ${{ env.working-directory }}
+        env:
+          DB_AUTH: ${{ secrets.DB_AUTH }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_NAME: ${{ secrets.DB_NAME_DEV }}
         run: |
           CHECK_SLS_CONFIG_CHANGED=`git diff-tree --no-commit-id --name-only -r ${{ github.sha }} | grep -i serverless.yml | wc -l`
           if [ $CHECK_SLS_CONFIG_CHANGED -gt 0 ]; then
-            make deploy-all
+            yarn deploy-all:dev
           else
-            make deploy
+            yarn deploy:dev
           fi

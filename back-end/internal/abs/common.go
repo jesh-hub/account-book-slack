@@ -3,11 +3,6 @@ package abs
 import (
 	"github.com/gin-gonic/gin"
 	"log"
-	"time"
-)
-
-const (
-	DB_TIMEOUT = 10 * time.Second
 )
 
 func errorHandlerInternal(err error) {

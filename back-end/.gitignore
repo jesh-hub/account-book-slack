@@ -1,5 +1,6 @@
 # Serverless directories
 .serverless
+.env*
 
 # golang output binary directory
 bin
@@ -25,5 +26,5 @@ vendor
 .idea
 .DS_Store
 secret.yml
-.env
+.env.dev
 node_modules

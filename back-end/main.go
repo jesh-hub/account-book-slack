@@ -12,9 +12,6 @@ import (
 var ginLambda *ginadapter.GinLambda
 
 func init() {
-	// db connection open
-	abs.ConnectDB()
-
 	// run server
 	r := gin.Default()
 	abs.NewAbsRouterV1(r)

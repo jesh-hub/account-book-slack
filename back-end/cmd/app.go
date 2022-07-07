@@ -6,9 +6,6 @@ import (
 )
 
 func main() {
-	// db connection open
-	abs.ConnectDB()
-
 	// run server
 	r := gin.Default()
 	abs.NewAbsRouterV1(r)
