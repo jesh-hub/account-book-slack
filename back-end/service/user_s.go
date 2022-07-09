@@ -1,12 +1,10 @@
-package abs
+package service
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"net/http"
 )
 
 type User struct {
@@ -17,22 +15,15 @@ type User struct {
 	Picture          string `json:"picture"`
 }
 
-type LoginParameter struct {
+type LoginParam struct {
 	Credential string `json:"credential" binding:"required"`
 }
 
-func Login(c *gin.Context) {
-	var loginParameter LoginParameter
-	if err := c.ShouldBindJSON(&loginParameter); err != nil {
-		errorHandler(c, 400, err)
-		return
-	}
-
+func Login(param LoginParam) (*User, error) {
 	// Parse jwt token
-	claims, err := JwtDecode(loginParameter.Credential)
+	claims, err := JwtDecode(param.Credential)
 	if err != nil {
-		errorHandler(c, 400, err)
-		return
+		return nil, err
 	}
 
 	// Check user is already exist
@@ -43,14 +34,10 @@ func Login(c *gin.Context) {
 	if err == mongo.ErrNoDocuments {
 		err = userColl.Create(user)
 	}
-	if err != nil {
-		errorHandler(c, http.StatusInternalServerError, err)
-		return
-	}
 
 	// Set value(name, picture) from google
 	user = setUserinfo(user, claims)
-	c.JSON(http.StatusOK, user)
+	return user, err
 }
 
 func setUserinfo(user *User, claims map[string]interface{}) *User {
