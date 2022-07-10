@@ -3,10 +3,10 @@ name: Backend CI/CD
 on:
   push:
     branches: [master]
-    paths: ['back-end/**', '.github/workflows/backend-cicd.yml']
+    paths: ['back-end/**']
   pull_request:
     branches: [master]
-    paths: ['back-end/**', '.github/workflows/backend-cicd.yml']
+    paths: ['back-end/**']
 
 jobs:
   deploy:
@@ -29,7 +29,7 @@ jobs:
           path: ${{ env.working-directory }}/node_modules
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-be-
+            ${{ runner.os }}-yarn-
 
       - name: Install dependencies
         if: ${{ steps.yarn-cache.outputs.cache-hit != 'true' && github.event_name == 'push' }}
