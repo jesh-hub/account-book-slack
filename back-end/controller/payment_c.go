@@ -22,13 +22,13 @@ func AddPayment(c *gin.Context) {
 	c.JSON(http.StatusOK, payment)
 }
 func FindPayment(c *gin.Context) {
-	param := &service.FindPaymentParam{}
-	if err := c.ShouldBindJSON(&param); err != nil {
-		util.ErrorHandler(c, 400, err)
-		return
+	param := service.FindPaymentParam{
+		DateFrom: c.Query("dateFrom"),
+		DateTo:   c.Query("dateTo"),
+		GroupId:  c.Query("groupId"),
 	}
 
-	payments, err := service.FindPayment(*param)
+	payments, err := service.FindPayment(param)
 	if err != nil {
 		util.ErrorHandler(c, 500, err)
 		return
