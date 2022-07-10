@@ -12,8 +12,8 @@ func main() {
 
 	// run server
 	r := gin.Default()
-	router.NewAbsRouterV1(r)
 	r.Use(middleware.SetHeader)
+	router.NewAbsRouterV1(r)
 	if err := r.Run(":8080"); err != nil {
 		return
 	}

@@ -26,13 +26,12 @@ type Payment struct {
 }
 
 type FindPaymentParam struct {
-	DateFrom          string         `json:"dateFrom"`
-	DateTo            string         `json:"dateTo"`
-	GroupId           string         `json:"groupId" binding:"required"`
-	OrderBy           map[string]int `json:"orderBy"`
-	PriceFrom         int            `json:"priceFrom"`
-	PriceTo           int            `json:"priceTo"`
-	WithPaymentMethod bool           `json:"withPaymentMethod"`
+	DateFrom  string         `json:"dateFrom"`
+	DateTo    string         `json:"dateTo"`
+	GroupId   string         `json:"groupId" binding:"required"`
+	OrderBy   map[string]int `json:"orderBy"`
+	PriceFrom int            `json:"priceFrom"`
+	PriceTo   int            `json:"priceTo"`
 }
 
 type UpdatePaymentParam struct {
