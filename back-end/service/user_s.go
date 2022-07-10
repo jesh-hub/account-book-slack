@@ -32,6 +32,7 @@ func Login(param LoginParam) (*User, error) {
 	user := &User{}
 	err = userColl.First(bson.M{"email": email}, user)
 	if err == mongo.ErrNoDocuments {
+		user.Email = email
 		err = userColl.Create(user)
 	}
 
