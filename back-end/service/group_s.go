@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/kamva/mgm/v3"
 	"github.com/kamva/mgm/v3/builder"
+	"github.com/kamva/mgm/v3/operator"
 	"go.mongodb.org/mongo-driver/bson"
 	"strings"
 )
@@ -60,17 +61,18 @@ func FindGroupByEmail(param FindGroupParam) (*[]Group, error) {
 	groupColl := mgm.Coll(&Group{})
 	groups := &[]Group{}
 
-	err := groupColl.SimpleFind(groups, bson.M{"users": param.Email})
-	if err != nil {
-		return nil, err
-	}
+	q := bson.M{"users": param.Email}
+	var err error
 
 	if strings.ToLower(param.WithPaymentMethod) == "true" {
 		paymentMethodColl := mgm.Coll(&PaymentMethod{}).Name()
-		groupColl.SimpleAggregate(
+		err = groupColl.SimpleAggregate(
 			groups,
 			builder.Lookup(paymentMethodColl, "_id", "groupId", "paymentMethods"),
+			bson.M{operator.Match: q},
 		)
+	} else {
+		err = groupColl.SimpleFind(groups, q)
 	}
 	return groups, err
 }
