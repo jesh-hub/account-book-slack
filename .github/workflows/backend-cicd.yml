@@ -27,7 +27,7 @@ jobs:
         id: yarn-cache
         with:
           path: ${{ env.working-directory }}/node_modules
-          key: ${{ runner.os }}-yarn-be-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-be-
 
