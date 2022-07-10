@@ -17,10 +17,9 @@ provider:
     GO_ENV: production
 
 package:
-  exclude:
-    - ./**
-  include:
-    - ./bin/**
+  patterns:
+    - '!**'
+    - 'bin/**'
 
 functions:
   abs:

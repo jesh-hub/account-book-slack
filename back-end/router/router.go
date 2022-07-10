@@ -1,0 +1,26 @@
+package router
+
+import (
+	"abs/controller"
+	"github.com/gin-gonic/gin"
+)
+
+const URL_PREFIX = "/abs"
+
+func NewAbsRouterV1(r *gin.Engine) *gin.RouterGroup {
+	v1 := r.Group(URL_PREFIX + "/v1")
+	{
+		v1.POST("/login", controller.Login)
+		// group
+		v1.GET("/group/:id", controller.FindGroupById)
+		v1.GET("/group", controller.FindGroupByEmail)
+		v1.POST("/group", controller.AddGroup)
+		v1.PUT("/group/:id", controller.UpdateGroup)
+		// payment method
+		v1.GET("/paymentMethod", controller.FindPaymentMethodByGroupId)
+		v1.POST("/paymentMethod", controller.AddPaymentMethod)
+		v1.PUT("/paymentMethod/:id", controller.UpdatePaymentMethod)
+	}
+
+	return v1
+}

@@ -1,4 +1,4 @@
-package abs
+package service
 
 import (
 	"errors"
