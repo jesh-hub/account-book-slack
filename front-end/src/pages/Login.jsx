@@ -38,7 +38,7 @@ export default function Login(props) {
     js.onerror = () => console.log('error');
     js.onload = () => {
       window.google.accounts.id.initialize({
-        client_id: process.env.GOOGLE_CLIENT_ID,
+        client_id: process.env.REACT_APP_GC_ID,
         callback: handleCredentialResponse
       });
       window.google.accounts.id.renderButton(

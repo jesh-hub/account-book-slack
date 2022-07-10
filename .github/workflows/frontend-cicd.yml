@@ -34,15 +34,11 @@ jobs:
         working-directory: ${{ env.working-directory }}
         run: yarn install --frozen-lockfile
 
-      - name: Create env file
-        working-directory: ${{ env.working-directory }}
-        run: |
-          touch .env
-          echo 'REACT_APP_ABS=${{ secrets.REACT_APP_ABS }}' >.env
-          echo 'GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}' >>.env
-
       - name: Build
         working-directory: ${{ env.working-directory }}
+        env:
+          REACT_APP_GC_ID: ${{ secrets.REACT_APP_GC_ID }}
+          REACT_APP_ABS: ${{ secrets.REACT_APP_ABS }}
         run: yarn build
 
       - name: Commit files
