@@ -3,10 +3,10 @@ name: Backend CI/CD
 on:
   push:
     branches: [master]
-    paths: ['back-end/**', '.github/workflows/backend-cicd.yml']
+    paths: ['back-end/**']
   pull_request:
     branches: [master]
-    paths: ['back-end/**', '.github/workflows/backend-cicd.yml']
+    paths: ['back-end/**']
 
 jobs:
   deploy:
