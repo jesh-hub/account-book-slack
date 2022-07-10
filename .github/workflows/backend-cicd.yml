@@ -3,7 +3,7 @@ name: Backend CI/CD
 on:
   push:
     branches: [master]
-    paths: ['back-end/**']
+    paths: ['back-end/**', '.github/workflows/backend-cicd.yml']
   pull_request:
     branches: [master]
     paths: ['back-end/**']
@@ -69,5 +69,6 @@ jobs:
           DB_AUTH: ${{ secrets.DB_AUTH }}
           DB_HOST: ${{ secrets.DB_HOST }}
           DB_NAME: ${{ secrets.DB_NAME_DEV }}
+          ALLOW_ORIGIN: ${{ secrets.ALLOW_ORIGIN }}
         run: |
           yarn deploy:dev
