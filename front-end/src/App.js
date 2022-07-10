@@ -1,59 +1,34 @@
 import '@/App.scss';
-import {Dropdown, DropdownButton} from 'react-bootstrap';
-import {useState} from 'react';
-import PaymentListView from '@/components/PaymentListView';
-import ProcessingSpinner from '@/common/ProcessingSpinner';
-import SummaryBySign from '@/components/SummaryBySign';
-import useRequest from '@/common/useRequest';
-import ErrorLogger from '@/components/ErrorLogger';
+import Login from '@/pages/Login';
+import OldApp from '@/_bak/OldApp';
+import { useState } from 'react';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+
+/**
+ * @typedef {Object} UserInfo
+ * @property {string} id - email 형식
+ * @property {string} firstName
+ * @property {string} lastName
+ * @property {string} picture
+ * @property {Date} modDate - Korea Standard Time
+ * @property {Date} regDate - Korea Standard Time
+ */
 
 function App() {
-  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
+  const _userInfo = window.localStorage.getItem('ABS_userInfo');
+  const [userInfo, setUserInfo] = useState(JSON.parse(_userInfo) || undefined);
 
-  const monthDropdownItems = [];
-  for (let i = 0; i < 12; i++)
-    monthDropdownItems.push(
-      <Dropdown.Item
-        key={i}
-        disabled={currentMonth === i}
-        onClick={() => setCurrentMonth(i)}
-      >
-        {i + 1}월
-      </Dropdown.Item>);
-
-  const start = `` +
-    `${new Date().getFullYear()}-${String(currentMonth + 1).padStart(2, '0')}`;
-  const end = `` +
-    `${new Date().getFullYear()}-${String(currentMonth + 1).padStart(2, '0')}`;
-  const [processing, payments] = useRequest(
-    '/payments', { start, end }, [currentMonth], []);
-
+  if (userInfo === undefined)
+    return <Login setUserInfo={setUserInfo} />;
   return (
-    <div className="app">
-      <header className="app-header">
-        <DropdownButton
-          className="abs-full-width-button"
-          variant="outline-primary"
-          title={`${currentMonth + 1}월`}
-        >
-          {monthDropdownItems}
-        </DropdownButton>
-        <article className="abs-monthly-summary">
-          <SummaryBySign
-            payments={payments}
-            mt="1"
-          />
-          <ProcessingSpinner processing={processing} />
-        </article>
-      </header>
-      <main className="app-main">
-        {!processing && <PaymentListView payments={payments} />}
-      </main>
-      <aside className="app-aside">
-        <ErrorLogger />
-      </aside>
-    </div>
-  );
+    <div className="abs-app">
+      <BrowserRouter>
+        <Routes>
+          <Route path="/old" element={<OldApp tab="/home"/>} />
+          <Route path="*" element={<Navigate replace to="/old" />} />
+        </Routes>
+      </BrowserRouter>
+    </div>);
 }
 
 export default App;
