@@ -13,14 +13,14 @@ import (
 
 type Payment struct {
 	mgm.DefaultModel   `bson:",inline"`
-	Date               primitive.DateTime `json:"date"`
-	Name               string             `json:"name"`
+	Date               primitive.DateTime `json:"date" binding:"required"`
+	Name               string             `json:"name" binding:"required"`
 	Category           string             `json:"category"`
-	Price              int                `json:"price"`
+	Price              int                `json:"price" binding:"required"`
 	MonthlyInstallment int                `json:"monthlyInstallment"`
-	PaymentMethodId    primitive.ObjectID `json:"paymentMethodId" bson:"paymentMethodId"`
-	GroupId            primitive.ObjectID `json:"groupId" bson:"groupId"`
-	RegUserId          string             `json:"regUserId" bson:"regUserId"`
+	PaymentMethodId    primitive.ObjectID `json:"paymentMethodId" bson:"paymentMethodId" binding:"required"`
+	GroupId            primitive.ObjectID `json:"groupId" bson:"groupId" binding:"required"`
+	RegUserId          string             `json:"regUserId" bson:"regUserId" binding:"required"`
 	ModUserId          string             `json:"modUserId" bson:"modUserId"`
 	PaymentMethods     *[]PaymentMethod   `json:"paymentMethods"`
 }
