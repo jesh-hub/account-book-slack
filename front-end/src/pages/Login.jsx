@@ -55,6 +55,7 @@ export default function Login(props) {
       document.head.removeChild(js);
     };
     document.head.appendChild(js);
+  // eslint-disable-next-line
   }, []);
 
   return (
