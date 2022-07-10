@@ -70,9 +70,4 @@ jobs:
           DB_HOST: ${{ secrets.DB_HOST }}
           DB_NAME: ${{ secrets.DB_NAME_DEV }}
         run: |
-          CHECK_SLS_CONFIG_CHANGED=`git diff-tree --no-commit-id --name-only -r ${{ github.sha }} | grep -i serverless.yml | wc -l`
-          if [ $CHECK_SLS_CONFIG_CHANGED -gt 0 ]; then
-            yarn deploy-all:dev
-          else
-            yarn deploy:dev
-          fi
+          yarn deploy:dev

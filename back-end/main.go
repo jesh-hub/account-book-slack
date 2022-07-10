@@ -2,6 +2,7 @@ package main
 
 import (
 	"abs/database"
+	"abs/middleware"
 	"abs/router"
 	"context"
 	"github.com/aws/aws-lambda-go/events"
@@ -17,6 +18,7 @@ func init() {
 
 	// run server
 	r := gin.Default()
+	r.Use(middleware.SetHeader)
 	router.NewAbsRouterV1(r)
 	ginLambda = ginadapter.New(r)
 }
