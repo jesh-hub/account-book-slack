@@ -27,9 +27,9 @@ jobs:
         id: yarn-cache
         with:
           path: ${{ env.working-directory }}/node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-yarn-be-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.os }}-nodemodules-
+            ${{ runner.os }}-yarn-be-
 
       - name: Install dependencies
         if: ${{ steps.yarn-cache.outputs.cache-hit != 'true' && github.event_name == 'push' }}
