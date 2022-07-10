@@ -45,5 +45,5 @@
     ]
   },
   "homepage": ".",
-  "proxy": "https://api.choshsh.com/abs"
+  "proxy": "https://6cj9jttrjb.execute-api.ap-northeast-2.amazonaws.com/dev/abs"
 }
