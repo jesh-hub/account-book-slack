@@ -1,0 +1,47 @@
+.abs-group {
+  margin: 5vh 0;
+  position: relative;
+
+  .group-creation {
+    margin-top: 5vh;
+  }
+
+  > .group-item {
+    border: 1px solid lightgrey;
+    border-radius: .5em;
+    padding: 1em 1em 0.5em;
+
+    &:not(:first-child) {
+      margin-top: .5em;
+    }
+
+    > .group-item-main {
+      position: relative;
+      padding: .5em 0;
+
+      .bilateral-align {
+        display: flex;
+        justify-content: space-between;
+      }
+    }
+
+    > .group-item-footer {
+      display: flex;
+
+      > .footer-action {
+        flex: 1 0;
+        position: relative;
+        text-align: center;
+
+        &:hover {
+          cursor: pointer;
+        }
+
+      }
+      > .action-divider {
+        margin: .5rem 0;
+        border-right: 1px solid darkgray;
+      }
+    }
+  }
+}

@@ -19,8 +19,8 @@ function SummaryBySign(props) {
 
   return (
     <>
-      <h6><b style={{'color': '#02d505'}}>수입: </b>{income.toLocaleString()}원</h6>
-      <h6><b style={{'color': '#fd2926'}}>지출: </b>{outgoing.toLocaleString()}원</h6>
+      <h6 className={props.className}><b style={{'color': '#02d505'}}>수입: </b>{income.toLocaleString()}원</h6>
+      <h6 className={props.className}><b style={{'color': '#fd2926'}}>지출: </b>{outgoing.toLocaleString()}원</h6>
     </>
   );
 }

@@ -1,0 +1,12 @@
+.main-nav {
+  flex: 1 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  text-align: center;
+  font-size: 2em;
+
+  > .nav-item {
+    padding: 0;
+    line-height: 100%;
+  }
+}
