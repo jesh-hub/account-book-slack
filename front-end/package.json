@@ -44,6 +44,6 @@
       "last 1 safari version"
     ]
   },
-  "homepage": ".",
+  "homepage": "account-book-slim",
   "proxy": "https://6cj9jttrjb.execute-api.ap-northeast-2.amazonaws.com/dev/abs"
 }

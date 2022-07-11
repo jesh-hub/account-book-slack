@@ -17,11 +17,12 @@ export default function Login(props) {
       const { data } = await axios.post(`${process.env.REACT_APP_ABS}/v1/login`, { credential });
       const userInfo = {
         id: data.id,
+        email: data.email,
         firstName: data.firstName,
         lastName: data.lastName,
         picture: data.picture,
-        modDate: new Date(data.modDate),
-        regDate: new Date(data.regDate)
+        updatedDate: new Date(data.updated_at),
+        createdDate: new Date(data.created_at)
       };
       window.localStorage.setItem('ABS_userInfo', JSON.stringify(userInfo));
       props.setUserInfo(userInfo);
