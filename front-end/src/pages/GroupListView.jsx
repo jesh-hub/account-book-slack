@@ -16,6 +16,7 @@ function _buildDateRange() {
 
 function GroupItemView(props) {
   const { group } = props;
+  const { setProcessing } = props;
   const [_processing, payments] = useRequest(
     '/v1/payment', {
       groupId: group.id,
@@ -23,8 +24,8 @@ function GroupItemView(props) {
     }, [], []);
 
   useEffect(() => {
-    props.setProcessing(_processing);
-  }, [_processing]);
+    setProcessing(_processing);
+  }, [_processing, setProcessing]);
 
   return (
     <section
