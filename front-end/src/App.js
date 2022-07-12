@@ -5,7 +5,7 @@ import GroupListView from '@/pages/GroupListView';
 import Login from '@/pages/Login';
 import OldApp from '@/_bak/OldApp';
 import { useState } from 'react';
-import { BrowserRouter, /*Navigate,*/ Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 /**
  * @typedef {Object} UserInfo
@@ -30,9 +30,9 @@ function App() {
         <Routes>
           <Route path="/" element={<MainApp />} >
             <Route path="group" element={<GroupListView userInfo={userInfo} />} />
+            <Route path="*" element={<Navigate replace to="group" />} />
           </Route>
           <Route path="/old" element={<OldApp tab="/home"/>} />
-          {/*<Route path="*" element={<Navigate replace to="/group" />} />*/}
         </Routes>
       </BrowserRouter>
     </div>);
