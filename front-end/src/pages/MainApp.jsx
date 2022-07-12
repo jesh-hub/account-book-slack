@@ -6,6 +6,7 @@ import { useCallback, useState } from 'react';
 
 export default function MainApp() {
   const to = useHref('/group');
+  console.log(to);
 
   const [navBarHeight, setNavBarClient] = useState(0);
   const navBar = useCallback(node => {
