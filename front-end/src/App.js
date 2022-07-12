@@ -26,7 +26,7 @@ function App() {
     return <Login setUserInfo={setUserInfo} />;
   return (
     <div className="abs-app">
-      <BrowserRouter>
+      <BrowserRouter basename="/account-book-slim">
         <Routes>
           <Route path="/" element={<MainApp />} >
             <Route path="group" element={<GroupListView userInfo={userInfo} />} />

@@ -1,12 +1,10 @@
 import '@/pages/MainApp.scss';
 import { Container, Nav, Navbar } from 'react-bootstrap';
-import { Link, Outlet, useHref } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 import { RiGroup2Fill } from 'react-icons/ri';
 import { useCallback, useState } from 'react';
 
 export default function MainApp() {
-  const to = useHref('/group');
-  console.log(to);
 
   const [navBarHeight, setNavBarClient] = useState(0);
   const navBar = useCallback(node => {
@@ -31,8 +29,8 @@ export default function MainApp() {
           <Nav className="main-nav">
             <Nav.Link
               as={Link}
+              to="/group"
               className="nav-item"
-              to={to}
             ><RiGroup2Fill /></Nav.Link>
           </Nav>
         </Container>
