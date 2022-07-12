@@ -5,7 +5,7 @@ import GroupListView from '@/pages/GroupListView';
 import Login from '@/pages/Login';
 import OldApp from '@/_bak/OldApp';
 import { useState } from 'react';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 /**
  * @typedef {Object} UserInfo
@@ -27,13 +27,12 @@ function App() {
   return (
     <div className="abs-app">
       {/* 도메인 사기 전에 잠깐 아래처럼 root path 지정해준다. */}
-      <BrowserRouter>
+      <BrowserRouter basename="/account-book-slim">
         <Routes>
           <Route path="/" element={<MainApp />} >
             <Route path="group" element={<GroupListView userInfo={userInfo} />} />
           </Route>
           <Route path="/old" element={<OldApp tab="/home"/>} />
-          <Route path="*" element={<Navigate replace to="/group" />} />
         </Routes>
       </BrowserRouter>
     </div>);
