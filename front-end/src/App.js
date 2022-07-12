@@ -5,7 +5,7 @@ import GroupListView from '@/pages/GroupListView';
 import Login from '@/pages/Login';
 import OldApp from '@/_bak/OldApp';
 import { useState } from 'react';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, /*Navigate,*/ Route, Routes } from 'react-router-dom';
 
 /**
  * @typedef {Object} UserInfo
