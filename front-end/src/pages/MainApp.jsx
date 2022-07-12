@@ -1,6 +1,6 @@
 import '@/pages/MainApp.scss';
 import { Container, Nav, Navbar } from 'react-bootstrap';
-import { Outlet, useHref } from 'react-router-dom';
+import { Link, Outlet, useHref } from 'react-router-dom';
 import { RiGroup2Fill } from 'react-icons/ri';
 import { useCallback, useState } from 'react';
 
@@ -28,7 +28,11 @@ export default function MainApp() {
       >
         <Container>
           <Nav className="main-nav">
-            <Nav.Link className="nav-item" href={to}><RiGroup2Fill /></Nav.Link>
+            <Nav.Link
+              as={Link}
+              className="nav-item"
+              to={to}
+            ><RiGroup2Fill /></Nav.Link>
           </Nav>
         </Container>
       </Navbar>
