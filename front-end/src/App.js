@@ -33,7 +33,7 @@ function App() {
             <Route path="group" element={<GroupListView userInfo={userInfo} />} />
           </Route>
           <Route path="/old" element={<OldApp tab="/home"/>} />
-          <Route path="*" element={<Navigate replace to="/group" />} />
+          {/*<Route path="*" element={<Navigate replace to="/group" />} />*/}
         </Routes>
       </BrowserRouter>
     </div>);
