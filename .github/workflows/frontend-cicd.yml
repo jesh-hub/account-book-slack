@@ -21,16 +21,20 @@ jobs:
         with:
           node-version: '16'
 
+      - name: Get yarn cache directory path
+        working-directory: ${{ env.working-directory }}
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
       - uses: actions/cache@v3
         id: yarn-cache
         with:
-          path: ${{ env.working-directory }}/node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-fe-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-
+            ${{ runner.os }}-yarn-fe
 
       - name: Install dependencies
-        if: ${{ steps.yarn-cache.outputs.cache-hit != 'true' }}
         working-directory: ${{ env.working-directory }}
         run: yarn install --frozen-lockfile
 
@@ -42,7 +46,7 @@ jobs:
         run: yarn build
 
       - name: Commit files
-        if: ${{ github.event_name == 'push' }}
+        # if: ${{ github.event_name == 'push' }}
         env:
           BUILD_PATH: ${{ env.working-directory }}/build
         run: |
@@ -54,7 +58,7 @@ jobs:
           git commit -m "Build & Deploy to GitHub Pages" -a
 
       - name: Push build-artifacts
-        if: ${{ github.event_name == 'push' }}
+        # if: ${{ github.event_name == 'push' }}
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
