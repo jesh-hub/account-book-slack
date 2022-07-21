@@ -2,15 +2,16 @@ name: Frontend CI/CD
 
 on:
   push:
-    branches: [master]
-    paths: ['front-end/**']
+    branches: [ master ]
+    paths: [ 'front-end/**' ]
   pull_request:
-    branches: [master]
-    paths: ['front-end/**']
+    branches: [ master ]
+    paths: [ 'front-end/**' ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    if: ${{ github.actor != 'dependabot[bot]' }}
     env:
       working-directory: front-end
     steps:
@@ -46,7 +47,7 @@ jobs:
         run: yarn build
 
       - name: Commit files
-        # if: ${{ github.event_name == 'push' }}
+          if: ${{ github.event_name == 'push' }}
         env:
           BUILD_PATH: ${{ env.working-directory }}/build
         run: |
@@ -58,7 +59,7 @@ jobs:
           git commit -m "Build & Deploy to GitHub Pages" -a
 
       - name: Push build-artifacts
-        # if: ${{ github.event_name == 'push' }}
+          if: ${{ github.event_name == 'push' }}
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
