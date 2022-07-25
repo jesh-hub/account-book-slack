@@ -15,7 +15,7 @@ export default function MainApp() {
     <>
       <main
         className="main-app"
-        style={{ 'paddingBottom': navBarHeight }}
+        style={{ 'marginBottom': navBarHeight }}
       >
         <Outlet />
       </main>

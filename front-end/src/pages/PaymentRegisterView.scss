@@ -1,0 +1,16 @@
+.abs-register {
+
+  .register-row {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+
+    &:not(:last-child) {
+      margin-bottom: 1.5rem;
+    }
+
+    .btn {
+      flex-shrink: 0;
+    }
+  }
+}

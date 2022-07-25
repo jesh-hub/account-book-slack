@@ -47,7 +47,9 @@ function GroupItemView(props) {
           variant="clear"
           className="footer-action"
           onClick={() => {
-            navigate(`/payments/register`);
+            navigate('/payments/register', {
+              state: { gid: group.id }
+            });
           }}
         >내역 등록</Button>
         <div className="action-divider" />
