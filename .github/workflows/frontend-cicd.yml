@@ -19,8 +19,6 @@ jobs:
 
       - name: Set environment
         uses: actions/github-script@v6
-        env:
-          BRANCH_NAME: ${{ github.ref_name }}
         with:
           script: |
             let deployStage = '';
