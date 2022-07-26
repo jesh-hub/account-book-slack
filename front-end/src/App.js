@@ -26,8 +26,7 @@ function App() {
     return <Login setUserInfo={setUserInfo} />;
   return (
     <div className="abs-app">
-      {/* 도메인 사기 전에 잠깐 아래처럼 root path 지정해준다. */}
-      <BrowserRouter basename="/account-book-slim">
+      <BrowserRouter>
         <Routes>
           <Route path="/" element={<MainApp />} >
             <Route path="group" element={<GroupListView userInfo={userInfo} />} />
