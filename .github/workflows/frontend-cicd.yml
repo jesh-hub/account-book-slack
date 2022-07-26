@@ -31,7 +31,7 @@ jobs:
                 reactAppAbs = '${{ secrets.REACT_APP_ABS_PROD }}';
                 cloudfront = '${{ secrets.CF_PROD }}';
                 break;
-              case 'pull_request'
+              case 'pull_request':
                 deployStage = 'dev';
                 reactAppAbs = '${{ secrets.REACT_APP_ABS_DEV }}';
                 cloudfront = '${{ secrets.CF_DEV }}';
