@@ -2,11 +2,11 @@ name: Frontend CI/CD
 
 on:
   push:
-    branches: [ master ]
-    paths: [ 'front-end/**' ]
+    branches: [master]
+    paths: ['front-end/**']
   pull_request:
-    branches: [ master ]
-    paths: [ 'front-end/**' ]
+    branches: [master]
+    paths: ['front-end/**']
 
 jobs:
   build:
@@ -16,6 +16,33 @@ jobs:
       working-directory: front-end
     steps:
       - uses: actions/checkout@v3
+
+      - name: Set environment
+        uses: actions/github-script@v6
+        env:
+          BRANCH_NAME: ${{ github.ref_name }}
+        with:
+          script: |
+            let deployStage = '';
+            let reactAppAbs = '';
+            let cloudfront = '';
+
+            switch (context.eventName) {
+              case 'push':
+                deployStage = 'prod';
+                reactAppAbs = '${{ secrets.REACT_APP_ABS_PROD }}';
+                cloudfront = '${{ secrets.CF_PROD }}';
+                break;
+              case 'pull_request'
+                deployStage = 'dev';
+                reactAppAbs = '${{ secrets.REACT_APP_ABS_DEV }}';
+                cloudfront = '${{ secrets.CF_DEV }}';
+                break;
+            }
+
+            core.exportVariable('DEPLOY_STAGE', deployStage);
+            core.exportVariable('REACT_APP_ABS', reactAppAbs);
+            core.exportVariable('CF', cloudfront);
 
       - name: Setup node.js
         uses: actions/setup-node@v3
@@ -43,25 +70,18 @@ jobs:
         working-directory: ${{ env.working-directory }}
         env:
           REACT_APP_GC_ID: ${{ secrets.REACT_APP_GC_ID }}
-          REACT_APP_ABS: ${{ secrets.REACT_APP_ABS }}
         run: yarn build
 
-      - name: Commit files
-        if: ${{ github.event_name == 'push' }}
-        env:
-          BUILD_PATH: ${{ env.working-directory }}/build
-        run: |
-          ls | grep -v ${{ env.working-directory }} | xargs rm -rf
-          mv ${{ env.BUILD_PATH }}/* . && rm -rf ${{ env.working-directory }}
-          git config --local user.email "cho911115@gmail.com"
-          git config --local user.name "github-actions[bot]"
-          git add --all
-          git commit -m "Build & Deploy to GitHub Pages" -a
-
-      - name: Push build-artifacts
-        if: ${{ github.event_name == 'push' }}
-        uses: ad-m/github-push-action@master
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: pages
-          force: true
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Upload static resources to s3
+        working-directory: ${{ env.working-directory }}
+        run: aws s3 sync build s3://${{ secrets.ABS_S3 }}/${{ env.DEPLOY_STAGE }} --delete
+
+      - name: Cloudfront cache invalidation
+        run: aws cloudfront create-invalidation --distribution-id ${{ env.CF }} --paths "/*"
