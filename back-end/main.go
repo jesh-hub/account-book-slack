@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var ginLambda *ginadapter.GinLambda
+var ginLambda *ginadapter.GinLambdaV2
 
 func init() {
 	database.Init()
@@ -20,10 +20,10 @@ func init() {
 	r := gin.Default()
 	r.Use(middleware.SetHeader)
 	router.NewAbsRouterV1(r)
-	ginLambda = ginadapter.New(r)
+	ginLambda = ginadapter.NewV2(r)
 }
 
-func Handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+func Handler(ctx context.Context, req events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPResponse, error) {
 	// If no name is provided in the HTTP request body, throw an error
 	return ginLambda.ProxyWithContext(ctx, req)
 }
