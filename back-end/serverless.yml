@@ -10,6 +10,10 @@ provider:
   runtime: go1.x
   memorySize: 128
   timeout: 10
+  httpApi:
+    cors:
+      allowedOrigins:
+        - '*'
   environment:
     DB_HOST: ${env:DB_HOST}
     DB_AUTH: ${env:DB_AUTH}
@@ -26,18 +30,6 @@ functions:
   abs:
     handler: bin/abs
     events:
-      - http:
+      - httpApi:
           path: /{proxy+}
           method: any
-          cors:
-            origin: ${env:ALLOW_ORIGIN}
-            headers:
-              - Content-Type
-              - X-Amz-Date
-              - Authorization
-              - X-Api-Key
-              - X-Amz-Security-Token
-              - X-Amz-User-Agent
-              - X-Amzn-Trace-Id
-            allowCredentials: false
-
