@@ -31,7 +31,7 @@ function App() {
         <Routes>
           <Route path="/" element={<MainApp />} >
             <Route path="group" element={<GroupListView userInfo={userInfo} />} />
-            <Route path="payments/register" element={<PaymentRegisterView />} />
+            <Route path="payments/register" element={<PaymentRegisterView userInfo={userInfo} />} />
           </Route>
           <Route path="/old" element={<OldApp tab="/home"/>} />
         </Routes>
