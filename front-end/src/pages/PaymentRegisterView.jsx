@@ -1,7 +1,7 @@
 import '@/pages/PaymentRegisterView.scss';
 import { Button, ButtonGroup, Col, Dropdown, DropdownButton, Form } from 'react-bootstrap';
 import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import useRequest from '@/common/useRequest';
 
@@ -9,6 +9,7 @@ const BtnTypes = [
   { key: 'income', uiText: '지출', value: -1 },
   { key: 'outgoing', uiText: '수입', value: 1 },
 ];
+const DateParamSuffix = ':00+09:00';
 
 function TypeButtons(props) {
   return BtnTypes.map(btn =>
@@ -48,11 +49,10 @@ function DropdownPaymentMethods(props) {
 
 export default function PaymentRegisterView(props) {
   const location = useLocation();
+  const navigate = useNavigate();
 
-  const now = new Date();
-  const [nowStr, setNowStr] = useState(
-    `${now.getFullYear()}-${_zeroPad(now.getMonth() + 1)}-${_zeroPad(now.getDate())}` +
-    `T${_zeroPad(now.getHours())}:${_zeroPad(now.getMinutes())}`);
+  const [date, setDate] = useState(new Date());
+  const [dateStr, setDateStr] = useState(dateToDateStr(date));
   const [name, setName] = useState('');
   const [activeBtn, setActiveBtn] = useState(BtnTypes[0]);
   const [price, setPrice] = useState('');
@@ -64,7 +64,8 @@ export default function PaymentRegisterView(props) {
     arg.preventDefault();
     try {
       await axios.post(`${process.env.REACT_APP_ABS}/v1/payment`, {
-        date: nowStr + ':00+09:00',
+        date: dateStr + DateParamSuffix,
+        // date: date.getTime(),
         name,
         category,
         price: price * activeBtn.value,
@@ -73,6 +74,7 @@ export default function PaymentRegisterView(props) {
         groupId: location.state.gid,
         regUserId: props.userInfo.id
       });
+      navigate(-1);
     } catch (e) {
       console.log(e);
     }
@@ -84,10 +86,10 @@ export default function PaymentRegisterView(props) {
         <Form.Group className="register-row">
           <Form.Control
             type="datetime-local"
-            value={nowStr}
+            value={dateStr}
             onChange={evt => {
-              setNowStr(evt.target.value);
-              console.log(evt.target.value);
+              setDateStr(evt.target.value);
+              setDate(dateStrToDate(evt.target.value));
             }}
           />
         </Form.Group>
@@ -152,6 +154,23 @@ export default function PaymentRegisterView(props) {
       </Form>
     </article>
   );
+}
+
+function dateToDateStr(date) {
+  return `` +
+    `${date.getFullYear()}-${_zeroPad(date.getMonth() + 1)}-${_zeroPad(date.getDate())}` +
+    `T${_zeroPad(date.getHours())}:${_zeroPad(date.getMinutes())}`;
+}
+
+function dateStrToDate(dateStr) {
+  const str = dateStr.replace(/\D/g, '');
+  return new Date(
+    +str.substring(0, 4),
+    +str.substring(4, 6) - 1,
+    +str.substring(6, 8),
+    +str.substring(8, 10),
+    +str.substring(10, 12),
+    +str.substring(12, 14));
 }
 
 function _zeroPad(va) {
