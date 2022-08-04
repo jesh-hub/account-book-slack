@@ -5,6 +5,7 @@ import useRequest from '@/common/useRequest';
 import ProcessingSpinner from '@/common/ProcessingSpinner';
 import SummaryBySign from '@/components/SummaryBySign';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function _buildDateRange() {
   const today = new Date();
@@ -15,8 +16,9 @@ function _buildDateRange() {
 }
 
 function GroupItemView(props) {
-  const { group } = props;
-  const { setProcessing } = props;
+  const navigate = useNavigate();
+
+  const { group, setProcessing } = props;
   const [_processing, payments] = useRequest(
     '/v1/payment', {
       groupId: group.id,
@@ -44,13 +46,19 @@ function GroupItemView(props) {
           size="sm"
           variant="clear"
           className="footer-action"
-        >수정하기</Button>
+          onClick={() => {
+            navigate('/payments/register', {
+              state: { gid: group.id }
+            });
+          }}
+        >내역 등록</Button>
         <div className="action-divider" />
         <Button
           size="sm"
           variant="clear"
           className="footer-action"
-        >삭제하기</Button>
+          disabled
+        >내역 확인</Button>
       </footer>
     </section>
   );
@@ -77,6 +85,7 @@ export default function GroupListView(props) {
         <Button
           className="w-100"
           variant="outline-primary"
+          disabled
         ><AiOutlinePlus /></Button>
       </section>
       <ProcessingSpinner processing={processing} />
