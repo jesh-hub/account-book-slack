@@ -70,7 +70,7 @@ export default function PaymentRegisterView(props) {
         category,
         price: price * activeBtn.value,
         monthlyInstallment: monthlyInstallment || 0,
-        paymentMethodId: activeMethod.id,
+        paymentMethodId: activeMethod?.id,
         groupId: location.state.gid,
         regUserId: props.userInfo.id
       });
@@ -91,6 +91,7 @@ export default function PaymentRegisterView(props) {
               setDateStr(evt.target.value);
               setDate(dateStrToDate(evt.target.value));
             }}
+            required
           />
         </Form.Group>
         <Form.Group className="register-row">
@@ -99,6 +100,7 @@ export default function PaymentRegisterView(props) {
             value={name}
             placeholder="지출 내역"
             onChange={evt => setName(evt.target.value)}
+            required
           />
         </Form.Group>
         <Form.Group className="register-row">
@@ -142,12 +144,14 @@ export default function PaymentRegisterView(props) {
               value={category}
               placeholder="카테고리"
               onChange={evt => setCategory(evt.target.value)}
+              required
             />
           </Col>
         </Form.Group>
         <Button
           className="w-100"
           type="submit"
+          disabled={! activeBtn || ! activeMethod}
         >
           등록
         </Button>
