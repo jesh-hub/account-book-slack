@@ -12,6 +12,7 @@ func ErrorHandlerInternal(err error) {
 }
 
 func ErrorHandler(c *gin.Context, code int, err error) {
+	log.Printf("URI: %s, Message: %s\n", c.Request.RequestURI, err)
 	c.JSON(code, gin.H{
 		"message": err.Error(),
 	})

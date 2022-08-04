@@ -28,6 +28,7 @@ package:
 
 functions:
   abs:
+    name: abs-${sls:stage}
     handler: bin/abs
     events:
       - httpApi:
