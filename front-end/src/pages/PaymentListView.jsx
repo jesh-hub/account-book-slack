@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import SummaryBySign from '@/components/SummaryBySign';
 import useRequest from '@/common/useRequest';
+import ProcessingSpinner from '@/common/ProcessingSpinner';
 
 const CurrentYear = 2022;
 
@@ -17,7 +18,11 @@ function _buildDateRange(year, month) {
 
 function korStdTimeStrToDateStr(date) {
   const _date = new Date(date);
-  return `${_date.getFullYear()}-${`${_date.getMonth() + 1}`.padStart(2, '0')}-${`${_date.getDate()}`.padStart(2, '0')}`;
+  return [
+    _date.getFullYear(),
+    `${_date.getMonth() + 1}`.padStart(2, '0'),
+    `${_date.getDate()}`.padStart(2, '0')
+  ].join('-');
 }
 
 function MonthDropdownItems(props) {
@@ -75,7 +80,7 @@ export default function PaymentListView() {
   const location = useLocation();
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
 
-  const [_processing, payments] = useRequest(
+  const [processing, payments] = useRequest(
     '/v1/payment', {
       groupId: location.state.gid,
       ..._buildDateRange(CurrentYear, currentMonth)
@@ -95,6 +100,7 @@ export default function PaymentListView() {
           <Dropdown.Toggle
             variant="outline-primary"
             className="w-100"
+            disabled={processing}
           >{currentMonth + 1}월</Dropdown.Toggle>
           <Dropdown.Menu className="w-100">
             <MonthDropdownItems
@@ -111,7 +117,11 @@ export default function PaymentListView() {
         </section>
       </header>
       <section className="payments">
-        <PaymentList payments={payments} />
+        {
+          processing ?
+            <ProcessingSpinner processing={processing} /> :
+            <PaymentList payments={payments} />
+        }
       </section>
     </article>
   );
