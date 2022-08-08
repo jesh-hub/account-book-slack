@@ -9,11 +9,11 @@
     > :not(:first-child) {
       margin-top: 0.5em;
     }
+    > .summary {
+      text-align: right;
+    }
   }
 
-  > .summary {
-    text-align: right;
-  }
 
   > .payments {
     > p {

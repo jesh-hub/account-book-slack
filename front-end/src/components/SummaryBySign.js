@@ -1,11 +1,19 @@
+/** @typedef {string} KorStdTimeStr - 2022-07-10T14:39:33.959Z */
 /**
  * @typedef {Object} Payment
  * @property {string} category
- * @property {string} date
- * @property {string} method
+ * @property {KorStdTimeStr} created_at
+ * @property {KorStdTimeStr} date
+ * @property {string} groupId
+ * @property {string} id
+ * @property {string} modUserId
  * @property {number} monthlyInstallment
  * @property {string} name
+ * @property {string} paymentMethodId
+ * @property {Array} paymentMethods
  * @property {number} price
+ * @property {string} regUserId
+ * @property {KorStdTimeStr} updated_at
  */
 
 function SummaryBySign(props) {
