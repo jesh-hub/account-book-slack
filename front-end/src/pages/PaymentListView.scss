@@ -1,4 +1,83 @@
 .abs-payments {
-  margin: 5vh 0;
   position: relative;
+
+  > :not(:last-child) {
+    margin-bottom: 1.5rem;
+  }
+
+  > .header {
+    > :not(:first-child) {
+      margin-top: 0.5em;
+    }
+  }
+
+  > .summary {
+    text-align: right;
+  }
+
+  > .payments {
+    > p {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .4em;
+    }
+    > .daily-payments {
+      border: 1px solid lightgrey;
+      border-radius: .5em;
+      padding: .5em;
+      margin: 0 auto;
+      width: 80vw;
+
+      &:not(:first-child) {
+        margin-top: .5em;
+      }
+
+      > ul {
+        list-style: none;
+        margin: 1em 0 0;
+        padding: 0;
+
+        > li {
+          display: flex;
+          justify-content: space-between;
+        }
+      }
+    }
+  }
+
+
+  > .group-item {
+    border: 1px solid lightgrey;
+    border-radius: .5em;
+    padding: 1em 1em 0.5em;
+
+    &:not(:first-child) {
+      margin-top: .5em;
+    }
+
+    > .group-item-main {
+      position: relative;
+      padding: .5em 0;
+    }
+
+    > .group-item-footer {
+      display: flex;
+
+      > .footer-action {
+        flex: 1 0;
+        position: relative;
+        text-align: center;
+
+        &:hover {
+          cursor: pointer;
+        }
+
+      }
+      > .action-divider {
+        margin: .5rem 0;
+        border-right: 1px solid darkgray;
+      }
+    }
+  }
 }
