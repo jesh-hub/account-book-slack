@@ -1,6 +1,7 @@
 import '@/pages/PaymentListView.scss';
 import { BsExclamationCircle } from 'react-icons/bs';
-import { Dropdown } from 'react-bootstrap';
+import { RiEdit2Line } from 'react-icons/ri';
+import { Button, Dropdown } from 'react-bootstrap';
 import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import SummaryBySign from '@/components/SummaryBySign';
@@ -68,7 +69,11 @@ function PaymentList(props) {
         {
           payments.items.map((item, i) =>
             <li key={`${payments.key}: ${i}`}>
-              <span>{item.name}</span>
+              <Button
+                size="xs"
+                variant="clear"
+              ><RiEdit2Line /></Button>
+              <span className="li__title">{item.name.repeat(5)}</span>
               <span>{item.price.toLocaleString()}원</span>
             </li>)
         }

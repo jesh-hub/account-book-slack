@@ -42,7 +42,16 @@
 
         > li {
           display: flex;
-          justify-content: space-between;
+          align-items: center;
+
+          > .li__title {
+            flex: 1 0 0;
+            word-break: break-all;
+          }
+
+          > :not(:first-child) {
+            margin-left: .25em;
+          }
         }
       }
     }

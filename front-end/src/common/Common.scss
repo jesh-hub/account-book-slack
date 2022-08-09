@@ -9,3 +9,11 @@
           $color: $gray-900,
           $disabled-color: $gray-700);
 }
+
+.btn-xs {
+  @include button-size(
+          $padding-y: $input-btn-padding-y-sm * .5,
+          $padding-x: $input-btn-padding-x-sm * .5,
+          $font-size: $input-btn-font-size-sm,
+          $border-radius: $border-radius-sm);
+}
