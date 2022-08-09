@@ -3,7 +3,7 @@ import '@/common/Common.scss';
 import MainApp from '@/pages/MainApp';
 import GroupListView from '@/pages/GroupListView';
 import Login from '@/pages/Login';
-import OldApp from '@/_bak/OldApp';
+import PaymentListView from '@/pages/PaymentListView';
 import PaymentRegisterView from '@/pages/PaymentRegisterView';
 import { useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
@@ -31,9 +31,9 @@ function App() {
         <Routes>
           <Route path="/" element={<MainApp />} >
             <Route path="group" element={<GroupListView userInfo={userInfo} />} />
+            <Route path="payments" element={<PaymentListView />} />
             <Route path="payments/register" element={<PaymentRegisterView userInfo={userInfo} />} />
           </Route>
-          <Route path="/old" element={<OldApp tab="/home"/>} />
         </Routes>
       </BrowserRouter>
     </div>);

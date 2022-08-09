@@ -57,7 +57,14 @@ function GroupItemView(props) {
           size="sm"
           variant="clear"
           className="footer-action"
-          disabled
+          onClick={() => {
+            navigate(`/payments`, {
+              state: {
+                gid: group.id,
+                payments
+              }
+            });
+          }}
         >내역 확인</Button>
       </footer>
     </section>
