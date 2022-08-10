@@ -149,7 +149,7 @@ export default function PaymentRegisterView(props) {
             setActiveMethod={setActiveMethod}
             onInit={(paymentMethods) => {
               if (prev !== undefined) {
-                const method = paymentMethods.find(method => method.id === prev.paymentMethodId);
+                const method = paymentMethods.find(_method => _method.id === prev.paymentMethodId);
                 setActiveMethod(method);
               }
             }}
