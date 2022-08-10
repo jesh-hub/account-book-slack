@@ -62,7 +62,7 @@ jobs:
       - name: Swagger
         working-directory: ${{ env.working-directory }}
         run: |
-          go install github.com/swaggo/swag/cmd/swag
+          go install github.com/swaggo/swag/cmd/swag@latest
           go mod tidy
           swag init --parseDependency --parseInternal
 
@@ -85,8 +85,8 @@ jobs:
           ALLOW_ORIGIN: ${{ secrets.ALLOW_ORIGIN }}
         run: |
           if [ "${{ env.DEPLOY_STAGE }}" == "prod" ]; then
-            DB_NAME=${{ secrets.DB_NAME_PROD }}
+            export DB_NAME=${{ secrets.DB_NAME_PROD }}
           else
-            DB_NAME=${{ secrets.DB_NAME_DEV }}
+            export DB_NAME=${{ secrets.DB_NAME_DEV }}
           fi
           yarn deploy:${{ env.DEPLOY_STAGE }}
