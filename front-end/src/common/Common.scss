@@ -2,6 +2,8 @@
 @import 'node_modules/bootstrap/scss/variables';
 @import 'node_modules/bootstrap/scss/mixins';
 
+// button variant {
+
 .btn-clear {
   @include button-variant(
           $background: transparent,
@@ -9,6 +11,17 @@
           $color: $gray-900,
           $disabled-color: $gray-700);
 }
+
+.btn-soft-clear {
+  @include button-variant(
+          $background: transparent,
+          $border: transparent,
+          $color: $gray-600,
+          $hover-color: $gray-700,
+          $disabled-color: $gray-700);
+}
+
+// button size {
 
 .btn-xs {
   @include button-size(

@@ -69,12 +69,13 @@ function PaymentList(props) {
         {
           payments.items.map((item, i) =>
             <li key={`${payments.key}: ${i}`}>
+              <span className="li__title">{item.name}</span>
+              <span className="li__price">{item.price.toLocaleString()}원</span>
               <Button
                 size="xs"
-                variant="clear"
+                variant="soft-clear"
+                className="li__edit-btn"
               ><RiEdit2Line /></Button>
-              <span className="li__title">{item.name.repeat(5)}</span>
-              <span>{item.price.toLocaleString()}원</span>
             </li>)
         }
       </ul>

@@ -49,8 +49,13 @@
             word-break: break-all;
           }
 
-          > :not(:first-child) {
+          > .li__price {
             margin-left: .25em;
+          }
+
+          > .li__edit-btn {
+            display: flex;
+            align-items: center;
           }
         }
       }
