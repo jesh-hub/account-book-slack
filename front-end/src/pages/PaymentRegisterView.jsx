@@ -86,7 +86,7 @@ export default function PaymentRegisterView(props) {
         name,
         category,
         price: price * activeBtn.value,
-        monthlyInstallment: +monthlyInstallment || 0,
+        monthlyInstallment: +monthlyInstallment,
         paymentMethodId: activeMethod?.id,
         groupId: location.state.gid,
         regUserId: props.userInfo.id
