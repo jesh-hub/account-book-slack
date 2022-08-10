@@ -61,6 +61,7 @@ jobs:
             ${{ runner.os }}-go-
 
       - name: Install dependencies (go)
+        working-directory: ${{ env.working-directory }}
         run: go mod tidy
 
       - name: Swagger
@@ -92,4 +93,4 @@ jobs:
           else
             DB_NAME=${{ secrets.DB_NAME_DEV }}
           fi
-          yarn deploy:$DB_NAME
+          yarn deploy:${{ env.DEPLOY_STAGE }}
