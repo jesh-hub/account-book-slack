@@ -96,6 +96,14 @@ func UpdatePayment(param UpdatePaymentParam) (*Payment, error) {
 		return nil, err
 	}
 
-	err = paymentColl.Update(param.Payment)
+	payment.Date = param.Payment.Date
+	payment.Name = param.Payment.Name
+	payment.Price = param.Payment.Price
+	payment.Category = param.Payment.Category
+	payment.ModUserId = param.Payment.ModUserId
+	payment.PaymentMethodId = param.Payment.PaymentMethodId
+	payment.MonthlyInstallment = param.Payment.MonthlyInstallment
+
+	err = paymentColl.Update(payment)
 	return param.Payment, err
 }
