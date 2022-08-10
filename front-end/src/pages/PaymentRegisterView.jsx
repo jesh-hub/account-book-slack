@@ -124,7 +124,11 @@ export default function PaymentRegisterView(props) {
           <ButtonGroup>
             <TypeButtons
               active={activeBtn}
-              setActiveBtn={setActiveBtn}
+              setActiveBtn={btn => {
+                setActiveBtn(btn);
+                if (btn.value > 0)
+                  setMonthlyInstallment('');
+              }}
             />
           </ButtonGroup>
           <Col>
@@ -155,6 +159,7 @@ export default function PaymentRegisterView(props) {
               type="number"
               value={monthlyInstallment}
               placeholder="0"
+              disabled={activeBtn?.value > 0}
               onChange={evt => setMonthlyInstallment(evt.target.value)}
             />
           </Col>
