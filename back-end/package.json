@@ -7,6 +7,6 @@
     "doctor": "sls doctor"
   },
   "devDependencies": {
-    "serverless": "^3.19.0"
+    "serverless": "^3.21.0"
   }
 }
