@@ -28,3 +28,4 @@ vendor
 secret.yml
 .env.dev
 node_modules
+docs
