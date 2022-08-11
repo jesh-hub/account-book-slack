@@ -92,7 +92,7 @@ func FindGroupById(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param groupId path string true "Group ID"
-// @Param group body model.Group true "Group"
+// @Param group body model.GroupUpdate true "GroupUpdate"
 // @Success 200 {object} model.Group
 // @Router /v1/group/{groupId} [put]
 func UpdateGroup(c *gin.Context) {

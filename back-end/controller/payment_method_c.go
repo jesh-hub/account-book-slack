@@ -61,19 +61,19 @@ func FindPaymentMethodByGroupId(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param paymentMethodId path string true "PaymentMethod ID"
-// @Param paymentMethod body model.PaymentMethod true "PaymentMethod"
+// @Param paymentMethodUpdate body model.PaymentMethodUpdate true "PaymentMethodUpdate"
 // @Success 200 {array} model.PaymentMethod
 // @Router /v1/paymentMethod/{paymentMethodId} [put]
 func UpdatePaymentMethod(c *gin.Context) {
 	paymentMethodId := c.Param("paymentMethodId")
-	paymentMethod := &model.PaymentMethodUpdate{}
+	paymentMethodUpdate := &model.PaymentMethodUpdate{}
 
-	if err := c.ShouldBindJSON(paymentMethod); err != nil {
+	if err := c.ShouldBindJSON(paymentMethodUpdate); err != nil {
 		util.ErrorHandler(c, 400, err)
 		return
 	}
 
-	updated, err := service.UpdatePaymentMethod(paymentMethodId, paymentMethod)
+	updated, err := service.UpdatePaymentMethod(paymentMethodId, paymentMethodUpdate)
 	if err != nil {
 		util.ErrorHandler(c, 500, err)
 		return
