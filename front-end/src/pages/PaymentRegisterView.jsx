@@ -34,6 +34,7 @@ function DropdownPaymentMethods(props) {
       setIsFirst(false);
     else if (! isWaitingPaymentMethods)
       props.onInit(paymentMethods);
+  // eslint-disable-next-line
   }, [isWaitingPaymentMethods]);
 
   return (
