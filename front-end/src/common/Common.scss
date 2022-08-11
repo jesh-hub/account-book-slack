@@ -2,10 +2,31 @@
 @import 'node_modules/bootstrap/scss/variables';
 @import 'node_modules/bootstrap/scss/mixins';
 
+// button variant {
+
 .btn-clear {
   @include button-variant(
           $background: transparent,
           $border: transparent,
           $color: $gray-900,
           $disabled-color: $gray-700);
+}
+
+.btn-soft-clear {
+  @include button-variant(
+          $background: transparent,
+          $border: transparent,
+          $color: $gray-600,
+          $hover-color: $gray-700,
+          $disabled-color: $gray-700);
+}
+
+// button size {
+
+.btn-xs {
+  @include button-size(
+          $padding-y: $input-btn-padding-y-sm * .5,
+          $padding-x: $input-btn-padding-x-sm * .5,
+          $font-size: $input-btn-font-size-sm,
+          $border-radius: $border-radius-sm);
 }

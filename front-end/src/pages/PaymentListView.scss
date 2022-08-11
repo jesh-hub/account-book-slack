@@ -42,7 +42,21 @@
 
         > li {
           display: flex;
-          justify-content: space-between;
+          align-items: center;
+
+          > .li__title {
+            flex: 1 0 0;
+            word-break: break-all;
+          }
+
+          > .li__price {
+            margin-left: .25em;
+          }
+
+          > .li__edit-btn {
+            display: flex;
+            align-items: center;
+          }
         }
       }
     }

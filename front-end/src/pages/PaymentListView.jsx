@@ -1,8 +1,9 @@
 import '@/pages/PaymentListView.scss';
 import { BsExclamationCircle } from 'react-icons/bs';
-import { Dropdown } from 'react-bootstrap';
+import { RiEdit2Line } from 'react-icons/ri';
+import { Button, Dropdown } from 'react-bootstrap';
 import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import SummaryBySign from '@/components/SummaryBySign';
 import useRequest from '@/common/useRequest';
 import ProcessingSpinner from '@/common/ProcessingSpinner';
@@ -38,6 +39,8 @@ function MonthDropdownItems(props) {
 }
 
 function PaymentList(props) {
+  const navigate = useNavigate();
+
   let curDateStr;
   const paymentsByDate = props.payments.sort((a, b) => a.date > b.date ? -1 : 1) // 내림차순
     .reduce((acc, /** @type {Payment} */ cur) => {
@@ -68,8 +71,21 @@ function PaymentList(props) {
         {
           payments.items.map((item, i) =>
             <li key={`${payments.key}: ${i}`}>
-              <span>{item.name}</span>
-              <span>{item.price.toLocaleString()}원</span>
+              <span className="li__title">{item.name}</span>
+              <span className="li__price">{item.price.toLocaleString()}원</span>
+              <Button
+                size="xs"
+                variant="soft-clear"
+                className="li__edit-btn"
+                onClick={() => {
+                  navigate('/payments/register', {
+                    state: {
+                      gid: item.groupId,
+                      prev: item,
+                    }
+                  });
+                }}
+              ><RiEdit2Line /></Button>
             </li>)
         }
       </ul>

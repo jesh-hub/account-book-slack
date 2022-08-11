@@ -1,6 +1,6 @@
 import '@/pages/PaymentRegisterView.scss';
 import { Button, ButtonGroup, Col, Dropdown, DropdownButton, Form } from 'react-bootstrap';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import useRequest from '@/common/useRequest';
@@ -25,8 +25,18 @@ function TypeButtons(props) {
 }
 
 function DropdownPaymentMethods(props) {
+  const [isFirst, setIsFirst] = useState(true);
   const [isWaitingPaymentMethods, paymentMethods] = useRequest(
     '/v1/paymentMethod', { groupId: props.gid }, [], []);
+
+  useEffect(() => {
+    if (isFirst && ! isWaitingPaymentMethods)
+      setIsFirst(false);
+    else if (! isWaitingPaymentMethods)
+      props.onInit(paymentMethods);
+  // eslint-disable-next-line
+  }, [isWaitingPaymentMethods]);
+
   return (
     <DropdownButton
       title={props.active?.name || '(선택)'}
@@ -51,25 +61,33 @@ export default function PaymentRegisterView(props) {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [date, setDate] = useState(new Date());
+  const { prev } = location.state;
+  const [date, setDate] = useState(prev !== undefined ? new Date(prev.date) : new Date());
   const [dateStr, setDateStr] = useState(dateToDateStr(date));
-  const [name, setName] = useState('');
-  const [activeBtn, setActiveBtn] = useState(BtnTypes[0]);
-  const [price, setPrice] = useState('');
+  const [name, setName] = useState(prev?.name || '');
+  const [activeBtn, setActiveBtn] = useState(getInitialPaymentType());
+  const [price, setPrice] = useState(Math.abs(prev?.price) || '');
   const [activeMethod, setActiveMethod] = useState();
-  const [monthlyInstallment, setMonthlyInstallment] = useState('');
-  const [category, setCategory] = useState('');
+  const [monthlyInstallment, setMonthlyInstallment] = useState(prev?.monthlyInstallment || '');
+  const [category, setCategory] = useState(prev?.category || '');
+
+  function getInitialPaymentType() {
+    return prev === undefined ? BtnTypes[0] :
+      BtnTypes.find(type => prev.price / Math.abs(prev.price) === type.value);
+  }
 
   async function submit(arg) {
     arg.preventDefault();
     try {
-      await axios.post(`${process.env.REACT_APP_ABS}/v1/payment`, {
+      const register = prev !== undefined ? axios.put : axios.post;
+      await register(`${process.env.REACT_APP_ABS}/v1/payment` +
+        (prev !== undefined ? `/${prev.id}` : ''), {
         date: dateStr + DateParamSuffix,
         // date: date.getTime(),
         name,
         category,
         price: price * activeBtn.value,
-        monthlyInstallment: monthlyInstallment || 0,
+        monthlyInstallment: +monthlyInstallment,
         paymentMethodId: activeMethod?.id,
         groupId: location.state.gid,
         regUserId: props.userInfo.id
@@ -107,7 +125,11 @@ export default function PaymentRegisterView(props) {
           <ButtonGroup>
             <TypeButtons
               active={activeBtn}
-              setActiveBtn={setActiveBtn}
+              setActiveBtn={btn => {
+                setActiveBtn(btn);
+                if (btn.value > 0)
+                  setMonthlyInstallment('');
+              }}
             />
           </ButtonGroup>
           <Col>
@@ -126,12 +148,19 @@ export default function PaymentRegisterView(props) {
             gid={location.state.gid}
             active={activeMethod}
             setActiveMethod={setActiveMethod}
+            onInit={(paymentMethods) => {
+              if (prev !== undefined) {
+                const method = paymentMethods.find(_method => _method.id === prev.paymentMethodId);
+                setActiveMethod(method);
+              }
+            }}
           />
           <Col>
             <Form.Control
               type="number"
               value={monthlyInstallment}
               placeholder="0"
+              disabled={activeBtn?.value > 0}
               onChange={evt => setMonthlyInstallment(evt.target.value)}
             />
           </Col>
