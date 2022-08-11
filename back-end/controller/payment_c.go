@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"abs/model"
 	"abs/service"
 	"abs/util"
 	"github.com/gin-gonic/gin"
@@ -13,17 +14,19 @@ import (
 // @Tags payment
 // @Accept json
 // @Produce json
-// @Param Payment body service.Payment true "Payment"
-// @Success 200 {object} service.Payment
-// @Router /v1/payment [post]
+// @Param groupId path string true "Group ID"
+// @Param payment body model.Payment true "Payment"
+// @Success 200 {object} model.Payment
+// @Router /v1/group/{groupId}/payment [post]
 func AddPayment(c *gin.Context) {
-	payment := &service.Payment{}
-	if err := c.ShouldBindJSON(&payment); err != nil {
+	groupId := c.Param("groupId")
+	payment := &model.Payment{}
+	if err := c.ShouldBindJSON(payment); err != nil {
 		util.ErrorHandler(c, 400, err)
 		return
 	}
 
-	payment, err := service.AddPayment(payment)
+	payment, err := service.AddPayment(groupId, payment)
 	if err != nil {
 		util.ErrorHandler(c, 500, err)
 		return
@@ -39,19 +42,19 @@ func AddPayment(c *gin.Context) {
 // @Tags payment
 // @Accept json
 // @Produce json
-// @Param DateFrom query string false "Format like 2006-01"
-// @Param DateTo query string false "Format like 2006-01"
-// @Param GroupId query string true "Group Id"
-// @Success 200 {array} service.Payment
-// @Router /v1/payment [get]
+// @Param groupId path string true "Group ID"
+// @Param dateFrom query string false "Format like 2006-01"
+// @Param dateTo query string false "Format like 2006-01"
+// @Success 200 {array} model.Payment
+// @Router /v1/group/{groupId}/payment [get]
 func FindPayment(c *gin.Context) {
-	param := service.FindPaymentParam{
+	groupId := c.Param("groupId")
+	paymentFind := model.PaymentFind{
 		DateFrom: c.Query("dateFrom"),
 		DateTo:   c.Query("dateTo"),
-		GroupId:  c.Query("groupId"),
 	}
 
-	payments, err := service.FindPayment(param)
+	payments, err := service.FindPayment(groupId, paymentFind)
 	if err != nil {
 		util.ErrorHandler(c, 500, err)
 		return
@@ -65,25 +68,20 @@ func FindPayment(c *gin.Context) {
 // @Tags payment
 // @Accept json
 // @Produce json
-// @Param id path string true "Payment ID"
-// @Param payment body service.Payment true "Payment"
-// @Success 200 {array} service.Payment
-// @Router /v1/payment/{id} [put]
+// @Param paymentId path string true "Payment ID"
+// @Param paymentUpdate body model.PaymentUpdate true "PaymentUpdate"
+// @Success 200 {object} model.Payment
+// @Router /v1/payment/{paymentId} [put]
 func UpdatePayment(c *gin.Context) {
-	id := c.Param("id")
-	payment := &service.Payment{}
+	paymentId := c.Param("paymentId")
+	paymentUpdate := &model.PaymentUpdate{}
 
-	if err := c.ShouldBindJSON(&payment); err != nil {
+	if err := c.ShouldBindJSON(paymentUpdate); err != nil {
 		util.ErrorHandler(c, 400, err)
 		return
 	}
 
-	param := service.UpdatePaymentParam{
-		Id:      id,
-		Payment: payment,
-	}
-
-	payment, err := service.UpdatePayment(param)
+	payment, err := service.UpdatePayment(paymentId, paymentUpdate)
 	if err != nil {
 		util.ErrorHandler(c, 500, err)
 		return

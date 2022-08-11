@@ -1,10 +1,12 @@
 package controller
 
 import (
+	"abs/model"
 	"abs/service"
 	"abs/util"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 // AddGroup
@@ -13,12 +15,12 @@ import (
 // @Tags group
 // @Accept json
 // @Produce json
-// @Param payment body service.Group true "Group"
-// @Success 200 {object} service.Group
+// @Param payment body model.Group true "Group"
+// @Success 200 {object} model.Group
 // @Router /v1/group [post]
 func AddGroup(c *gin.Context) {
-	group := &service.Group{}
-	if err := c.ShouldBindJSON(&group); err != nil {
+	group := &model.Group{}
+	if err := c.ShouldBindJSON(group); err != nil {
 		util.ErrorHandler(c, 400, err)
 		return
 	}
@@ -31,41 +33,23 @@ func AddGroup(c *gin.Context) {
 	c.JSON(http.StatusOK, group)
 }
 
-// FindGroupById
-// @Summary Find group by group id
-// @Description groupId로 그룹 조회
-// @Tags group
-// @Accept json
-// @Produce json
-// @Param id path string true "Group ID"
-// @Success 200 {object} service.Group
-// @Router /v1/group/{id} [get]
-func FindGroupById(c *gin.Context) {
-	param := service.NewFindGroupParam()
-	param.Id = c.Param("id")
-	param.WithPaymentMethod = c.Query("withPaymentMethod")
-
-	group, err := service.FindGroupById(param)
-	if err != nil {
-		util.ErrorHandler(c, 500, err)
-		return
-	}
-	c.JSON(http.StatusOK, group)
-}
-
-// FindGroupByEmail
-// @Summary Find group by email
+// FindGroup
+// @Summary Find group by paramter
 // @Description email로 그룹 조회
 // @Tags group
 // @Accept json
 // @Produce json
 // @Param email query string true "email"
-// @Success 200 {array} service.Group
+// @Param withPaymentMethod query bool false "결제수단 함께 조회하는지 여부"
+// @Success 200 {array} model.Group
 // @Router /v1/group [get]
-func FindGroupByEmail(c *gin.Context) {
+func FindGroup(c *gin.Context) {
 	param := service.NewFindGroupParam()
 	param.Email = c.Query("email")
-	param.WithPaymentMethod = c.Query("withPaymentMethod")
+
+	if v, ok := c.GetQuery("withPaymentMethod"); ok {
+		param.WithPaymentMethod, _ = strconv.ParseBool(v)
+	}
 
 	groups, err := service.FindGroupByEmail(param)
 	if err != nil {
@@ -75,31 +59,52 @@ func FindGroupByEmail(c *gin.Context) {
 	c.JSON(http.StatusOK, groups)
 }
 
+// FindGroupById
+// @Summary Find group by group id
+// @Description groupId로 그룹 조회
+// @Tags group
+// @Accept json
+// @Produce json
+// @Param groupId path string true "Group ID"
+// @Param withPaymentMethod query bool false "결제수단 함께 조회하는지 여부"
+// @Success 200 {object} model.Group
+// @Router /v1/group/{groupId} [get]
+func FindGroupById(c *gin.Context) {
+	param := service.NewFindGroupParam()
+	param.Id = c.Param("groupId")
+
+	if v, ok := c.GetQuery("withPaymentMethod"); ok {
+		param.WithPaymentMethod, _ = strconv.ParseBool(v)
+	}
+
+	group, err := service.FindGroupById(param)
+	if err != nil {
+		util.ErrorHandler(c, 500, err)
+		return
+	}
+	c.JSON(http.StatusOK, group)
+}
+
 // UpdateGroup
 // @Summary Update group
 // @Description 그룹 수정
 // @Tags group
 // @Accept json
 // @Produce json
-// @Param id path string true "Group ID"
-// @Param group body service.Group true "Group"
-// @Success 200 {object} service.Group
-// @Router /v1/group/{id} [put]
+// @Param groupId path string true "Group ID"
+// @Param group body model.Group true "Group"
+// @Success 200 {object} model.Group
+// @Router /v1/group/{groupId} [put]
 func UpdateGroup(c *gin.Context) {
-	id := c.Param("id")
-	group := &service.Group{}
+	id := c.Param("groupId")
+	groupUpdate := &model.GroupUpdate{}
 
-	if err := c.ShouldBindJSON(&group); err != nil {
+	if err := c.ShouldBindJSON(groupUpdate); err != nil {
 		util.ErrorHandler(c, 400, err)
 		return
 	}
 
-	param := service.UpdateGroupParam{
-		Id:    id,
-		Group: group,
-	}
-
-	group, err := service.UpdateGroup(param)
+	group, err := service.UpdateGroup(id, groupUpdate)
 	if err != nil {
 		util.ErrorHandler(c, 500, err)
 		return

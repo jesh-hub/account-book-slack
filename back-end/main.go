@@ -16,8 +16,6 @@ import (
 
 var ginLambda *ginadapter.GinLambdaV2
 
-// @host abs-api-dev.wejesh.com
-// @schemes https
 func init() {
 	database.Init()
 

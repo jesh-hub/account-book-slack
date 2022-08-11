@@ -1,6 +1,7 @@
 package service
 
 import (
+	"abs/model"
 	"abs/util"
 	"github.com/kamva/mgm/v3"
 	"github.com/kamva/mgm/v3/builder"
@@ -11,74 +12,47 @@ import (
 	"time"
 )
 
-type Payment struct {
-	mgm.DefaultModel   `bson:",inline"`
-	Date               primitive.DateTime `json:"date" binding:"required"`
-	Name               string             `json:"name" binding:"required"`
-	Category           string             `json:"category"`
-	Price              int                `json:"price" binding:"required"`
-	MonthlyInstallment int                `json:"monthlyInstallment"`
-	PaymentMethodId    primitive.ObjectID `json:"paymentMethodId" bson:"paymentMethodId" binding:"required"`
-	GroupId            primitive.ObjectID `json:"groupId" bson:"groupId" binding:"required"`
-	RegUserId          string             `json:"regUserId" bson:"regUserId" binding:"required"`
-	ModUserId          string             `json:"modUserId" bson:"modUserId"`
-	PaymentMethods     *[]PaymentMethod   `json:"paymentMethods"`
-}
-
-type FindPaymentParam struct {
-	DateFrom  string         `json:"dateFrom"`
-	DateTo    string         `json:"dateTo"`
-	GroupId   string         `json:"groupId" binding:"required"`
-	OrderBy   map[string]int `json:"orderBy"`
-	PriceFrom int            `json:"priceFrom"`
-	PriceTo   int            `json:"priceTo"`
-}
-
-type UpdatePaymentParam struct {
-	Id      string
-	Payment *Payment
-}
-
-func AddPayment(payment *Payment) (*Payment, error) {
-	paymentColl := mgm.Coll(&Payment{})
+func AddPayment(groupId string, payment *model.Payment) (*model.Payment, error) {
+	paymentColl := mgm.Coll(&model.Payment{})
+	payment.GroupId = util.ConvertStringToObjectId(groupId)
 	err := paymentColl.Create(payment)
 	return payment, err
 }
 
-func FindPayment(param FindPaymentParam) (*[]Payment, error) {
-	paymentColl := mgm.Coll(&Payment{})
-	payments := &[]Payment{}
+func FindPayment(groupId string, paymentFind model.PaymentFind) (*[]model.Payment, error) {
+	paymentColl := mgm.Coll(&model.Payment{})
+	payments := &[]model.Payment{}
 
 	q := bson.M{
-		"groupId": util.ConvertStringToObjectId(param.GroupId),
+		"groupId": util.ConvertStringToObjectId(groupId),
 	}
-	// when [start, end] parameter exist
-	if len(param.DateFrom) > 0 && len(param.DateTo) > 0 {
-		startTime, _ := time.Parse("2006-01", param.DateFrom)
-		endTime, _ := time.Parse("2006-01", param.DateTo)
+	// when [start, end] parameter id existed
+	if len(paymentFind.DateFrom) > 0 && len(paymentFind.DateTo) > 0 {
+		startTime, _ := time.Parse("2006-01", paymentFind.DateFrom)
+		endTime, _ := time.Parse("2006-01", paymentFind.DateTo)
 		q["date"] = bson.M{
 			"$gte": primitive.NewDateTimeFromTime(startTime),
 			"$lt":  primitive.NewDateTimeFromTime(endTime),
 		}
 	}
-	// when [pricefrom, priceto] is exist
-	if param.PriceFrom != 0 && param.PriceTo != 0 {
+	// when [priceFrom, priceTo] is existed
+	if paymentFind.PriceFrom != 0 && paymentFind.PriceTo != 0 {
 		q["price"] = bson.M{
-			"$gte": param.PriceFrom,
-			"$lt":  param.PriceTo,
+			"$gte": paymentFind.PriceFrom,
+			"$lt":  paymentFind.PriceTo,
 		}
 	}
 	// -1: desc, 1: asc
 	opts := options.Find()
 	sort := bson.D{{"date", -1}}
-	if len(param.OrderBy) != 0 {
-		for k, v := range param.OrderBy {
+	if len(paymentFind.OrderBy) != 0 {
+		for k, v := range paymentFind.OrderBy {
 			sort = append(sort, bson.E{Key: k, Value: v})
 		}
 	}
 	opts.SetSort(sort)
 
-	paymentMethodColl := mgm.Coll(&PaymentMethod{}).Name()
+	paymentMethodColl := mgm.Coll(&model.PaymentMethod{}).Name()
 	err := paymentColl.SimpleAggregate(
 		payments,
 		builder.Lookup(paymentMethodColl, "paymentMethodId", "_id", "paymentMethods"),
@@ -87,23 +61,23 @@ func FindPayment(param FindPaymentParam) (*[]Payment, error) {
 	return payments, err
 }
 
-func UpdatePayment(param UpdatePaymentParam) (*Payment, error) {
-	paymentColl := mgm.Coll(&Payment{})
-	payment := &Payment{}
+func UpdatePayment(paymentId string, paymentUpdate *model.PaymentUpdate) (*model.Payment, error) {
+	paymentColl := mgm.Coll(&model.Payment{})
+	payment := &model.Payment{}
 
-	err := paymentColl.FindByID(param.Id, payment)
+	err := paymentColl.FindByID(paymentId, payment)
 	if err != nil {
 		return nil, err
 	}
 
-	payment.Date = param.Payment.Date
-	payment.Name = param.Payment.Name
-	payment.Price = param.Payment.Price
-	payment.Category = param.Payment.Category
-	payment.ModUserId = param.Payment.ModUserId
-	payment.PaymentMethodId = param.Payment.PaymentMethodId
-	payment.MonthlyInstallment = param.Payment.MonthlyInstallment
+	payment.Date = paymentUpdate.Date
+	payment.Name = paymentUpdate.Name
+	payment.Price = paymentUpdate.Price
+	payment.Category = paymentUpdate.Category
+	payment.ModUserId = paymentUpdate.ModUserId
+	payment.PaymentMethodId = paymentUpdate.PaymentMethodId
+	payment.MonthlyInstallment = paymentUpdate.MonthlyInstallment
 
 	err = paymentColl.Update(payment)
-	return param.Payment, err
+	return payment, err
 }

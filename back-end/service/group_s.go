@@ -1,71 +1,48 @@
 package service
 
 import (
+	"abs/model"
 	"github.com/kamva/mgm/v3"
 	"github.com/kamva/mgm/v3/builder"
 	"github.com/kamva/mgm/v3/operator"
 	"go.mongodb.org/mongo-driver/bson"
-	"strings"
 )
 
-type Group struct {
-	mgm.DefaultModel `bson:",inline"`
-	Name             string           `json:"name" bson:"name" binding:"required"`
-	Users            []string         `json:"users" bson:"users" binding:"required"`
-	RegUserId        string           `json:"regUserId" bson:"regUserId"`
-	ModUserId        string           `json:"modUserId" bson:"modUserId"`
-	PaymentMethods   *[]PaymentMethod `json:"paymentMethods"`
-}
-
-type FindGroupParam struct {
-	Id                string
-	Email             string
-	WithPaymentMethod string
-}
-
-type UpdateGroupParam struct {
-	Id    string
-	Group *Group
-}
-
-func NewFindGroupParam() FindGroupParam {
-	return FindGroupParam{
+func NewFindGroupParam() model.GroupFind {
+	return model.GroupFind{
 		Id:                "",
 		Email:             "",
-		WithPaymentMethod: "false",
+		WithPaymentMethod: false,
 	}
 }
 
-func AddGroup(group *Group) (*Group, error) {
-	groupColl := mgm.Coll(&Group{})
+func AddGroup(group *model.Group) (*model.Group, error) {
+	groupColl := mgm.Coll(&model.Group{})
 	err := groupColl.Create(group)
 	return group, err
 }
 
-func FindGroupById(param FindGroupParam) (*Group, error) {
-	groupColl := mgm.Coll(&Group{})
-	group := &Group{}
-	err := groupColl.FindByID(param.Id, group)
+func FindGroupById(groupFind model.GroupFind) (*model.Group, error) {
+	groupColl := mgm.Coll(&model.Group{})
+	group := &model.Group{}
+	err := groupColl.FindByID(groupFind.Id, group)
 
-	if strings.ToLower(param.WithPaymentMethod) == "true" {
-		paymentMethodParam := FindPaymentMethodParam{
-			GroupId: group.ID.Hex(),
-		}
-		paymentMethods, _ := FindPaymentMethodByGroupId(paymentMethodParam)
+	if groupFind.WithPaymentMethod {
+		paymentMethods, _ := FindPaymentMethodByGroupId(groupFind.Id)
 		group.PaymentMethods = paymentMethods
 	}
 	return group, err
 }
 
-func FindGroupByEmail(param FindGroupParam) (*[]Group, error) {
-	groupColl := mgm.Coll(&Group{})
-	groups := &[]Group{}
+func FindGroupByEmail(param model.GroupFind) (*[]model.Group, error) {
+	groupColl := mgm.Coll(&model.Group{})
+	groups := &[]model.Group{}
 
 	q := bson.M{"users": param.Email}
 	var err error
 
-	if strings.ToLower(param.WithPaymentMethod) == "true" {
-		paymentMethodColl := mgm.Coll(&PaymentMethod{}).Name()
+	if param.WithPaymentMethod {
+		paymentMethodColl := mgm.Coll(&model.PaymentMethod{}).Name()
 		err = groupColl.SimpleAggregate(
 			groups,
 			builder.Lookup(paymentMethodColl, "_id", "groupId", "paymentMethods"),
@@ -77,15 +54,19 @@ func FindGroupByEmail(param FindGroupParam) (*[]Group, error) {
 	return groups, err
 }
 
-func UpdateGroup(param UpdateGroupParam) (*Group, error) {
-	groupColl := mgm.Coll(&Group{})
-	group := &Group{}
+func UpdateGroup(id string, groupUpdate *model.GroupUpdate) (*model.Group, error) {
+	groupColl := mgm.Coll(&model.Group{})
+	group := &model.Group{}
 
-	err := groupColl.FindByID(param.Id, group)
+	err := groupColl.FindByID(id, group)
 	if err != nil {
 		return nil, err
 	}
 
-	err = groupColl.Update(param.Group)
-	return param.Group, err
+	group.Name = groupUpdate.Name
+	group.Users = groupUpdate.Users
+	group.ModUserId = groupUpdate.ModUserId
+
+	err = groupColl.Update(group)
+	return group, err
 }

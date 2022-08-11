@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"abs/model"
 	"abs/service"
 	"abs/util"
 	"github.com/gin-gonic/gin"
@@ -13,17 +14,19 @@ import (
 // @Tags payment_method
 // @Accept json
 // @Produce json
-// @Param paymentMethod body service.PaymentMethod true "PaymentMethod"
-// @Success 200 {object} service.PaymentMethod
-// @Router /v1/paymentMethod [post]
+// @Param groupId path string true "Group ID"
+// @Param paymentMethod body model.PaymentMethod true "PaymentMethod"
+// @Success 200 {object} model.PaymentMethod
+// @Router /v1/group/{groupId}/paymentMethod [post]
 func AddPaymentMethod(c *gin.Context) {
-	paymentMethod := &service.PaymentMethod{}
+	groupId := c.Param("groupId")
+	paymentMethod := &model.PaymentMethod{}
 	if err := c.ShouldBindJSON(paymentMethod); err != nil {
 		util.ErrorHandler(c, 400, err)
 		return
 	}
 
-	paymentMethod, err := service.AddPaymentMethod(paymentMethod)
+	paymentMethod, err := service.AddPaymentMethod(groupId, paymentMethod)
 	if err != nil {
 		util.ErrorHandler(c, 500, err)
 		return
@@ -37,14 +40,13 @@ func AddPaymentMethod(c *gin.Context) {
 // @Tags payment_method
 // @Accept json
 // @Produce json
-// @Param groupId query string true "Group ID"
-// @Success 200 {array} service.PaymentMethod
-// @Router /v1/paymentMethod/{groupId} [get]
+// @Param groupId path string true "Group ID"
+// @Success 200 {array} model.PaymentMethod
+// @Router /v1/group/{groupId}/paymentMethod [get]
 func FindPaymentMethodByGroupId(c *gin.Context) {
-	param := service.NewFindPaymentMethodParam()
-	param.GroupId = c.Query("groupId")
+	groupId := c.Param("groupId")
 
-	paymentMethods, err := service.FindPaymentMethodByGroupId(param)
+	paymentMethods, err := service.FindPaymentMethodByGroupId(groupId)
 	if err != nil {
 		util.ErrorHandler(c, 500, err)
 		return
@@ -58,28 +60,23 @@ func FindPaymentMethodByGroupId(c *gin.Context) {
 // @Tags payment_method
 // @Accept json
 // @Produce json
-// @Param id path string true "PaymentMethod ID"
-// @Param PaymentMethod body service.PaymentMethod true "PaymentMethod"
-// @Success 200 {array} service.PaymentMethod
-// @Router /v1/paymentMethod/{id} [put]
+// @Param paymentMethodId path string true "PaymentMethod ID"
+// @Param paymentMethod body model.PaymentMethod true "PaymentMethod"
+// @Success 200 {array} model.PaymentMethod
+// @Router /v1/paymentMethod/{paymentMethodId} [put]
 func UpdatePaymentMethod(c *gin.Context) {
-	id := c.Param("id")
-	paymentMethod := &service.PaymentMethod{}
+	paymentMethodId := c.Param("paymentMethodId")
+	paymentMethod := &model.PaymentMethodUpdate{}
 
-	if err := c.ShouldBindJSON(&paymentMethod); err != nil {
+	if err := c.ShouldBindJSON(paymentMethod); err != nil {
 		util.ErrorHandler(c, 400, err)
 		return
 	}
 
-	param := service.UpdatePaymentMethodParam{
-		Id:            id,
-		PaymentMethod: paymentMethod,
-	}
-
-	paymentMethod, err := service.UpdatePaymentMethod(param)
+	updated, err := service.UpdatePaymentMethod(paymentMethodId, paymentMethod)
 	if err != nil {
 		util.ErrorHandler(c, 500, err)
 		return
 	}
-	c.JSON(http.StatusOK, paymentMethod)
+	c.JSON(http.StatusOK, updated)
 }
