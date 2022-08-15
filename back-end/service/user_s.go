@@ -12,7 +12,7 @@ type LoginParam struct {
 	Credential string `json:"credential" binding:"required"`
 }
 
-func Login(param LoginParam) (*model.User, error) {
+func Login(param *LoginParam) (*model.User, error) {
 	// Parse jwt token
 	claims, err := JwtDecode(param.Credential)
 	if err != nil {
