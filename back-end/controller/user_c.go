@@ -8,8 +8,8 @@ import (
 )
 
 func Login(c *gin.Context) {
-	param := service.LoginParam{}
-	if err := c.ShouldBindJSON(&param); err != nil {
+	param := &service.LoginParam{}
+	if err := c.ShouldBindJSON(param); err != nil {
 		util.ErrorHandler(c, 400, err)
 		return
 	}

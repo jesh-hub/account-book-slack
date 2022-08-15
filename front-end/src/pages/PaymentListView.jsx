@@ -42,8 +42,7 @@ function PaymentList(props) {
   const navigate = useNavigate();
 
   let curDateStr;
-  const paymentsByDate = props.payments.sort((a, b) => a.date > b.date ? -1 : 1) // 내림차순
-    .reduce((acc, /** @type {Payment} */ cur) => {
+  const paymentsByDate = props.payments.reduce((acc, /** @type {Payment} */ cur) => {
       const dateStr = korStdTimeStrToDateStr(cur.date);
       if (dateStr !== curDateStr) {
         acc.push({
@@ -97,10 +96,8 @@ export default function PaymentListView() {
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
 
   const [processing, payments] = useRequest(
-    '/v1/payment', {
-      groupId: location.state.gid,
-      ..._buildDateRange(CurrentYear, currentMonth)
-    }, [currentMonth], location.state.payments || []);
+    `/v1/group/${location.state.gid}/payment`,
+    _buildDateRange(CurrentYear, currentMonth), [currentMonth], location.state.payments || []);
 
   return (
     <article className="abs-payments">

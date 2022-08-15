@@ -64,7 +64,7 @@ jobs:
         run: |
           go install github.com/swaggo/swag/cmd/swag@latest
           go mod tidy
-          swag init --parseDependency --parseInternal
+          make docs
 
       - name: Build
         working-directory: ${{ env.working-directory }}

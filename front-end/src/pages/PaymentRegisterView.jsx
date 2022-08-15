@@ -27,7 +27,7 @@ function TypeButtons(props) {
 function DropdownPaymentMethods(props) {
   const [isFirst, setIsFirst] = useState(true);
   const [isWaitingPaymentMethods, paymentMethods] = useRequest(
-    '/v1/paymentMethod', { groupId: props.gid }, [], []);
+    `/v1/group/${props.gid}/paymentMethod`, null, [], []);
 
   useEffect(() => {
     if (isFirst && ! isWaitingPaymentMethods)
@@ -80,8 +80,9 @@ export default function PaymentRegisterView(props) {
     arg.preventDefault();
     try {
       const register = prev !== undefined ? axios.put : axios.post;
-      await register(`${process.env.REACT_APP_ABS}/v1/payment` +
-        (prev !== undefined ? `/${prev.id}` : ''), {
+      const urlSuffix = prev !== undefined ? `payment/${prev.id}` :
+        `group/${location.state.gid}/payment`;
+      await register(`${process.env.REACT_APP_ABS}/v1/${urlSuffix}`, {
         date: dateStr + DateParamSuffix,
         // date: date.getTime(),
         name,
@@ -90,7 +91,10 @@ export default function PaymentRegisterView(props) {
         monthlyInstallment: +monthlyInstallment,
         paymentMethodId: activeMethod?.id,
         groupId: location.state.gid,
-        regUserId: props.userInfo.id
+        // put일 때 보내지 않게
+        regUserId: props.userInfo.id,
+        // post일 때 보내기 않게
+        modUserId: props.userInfo.id
       });
       navigate(-1);
     } catch (e) {
