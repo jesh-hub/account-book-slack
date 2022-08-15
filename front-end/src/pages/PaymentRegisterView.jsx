@@ -79,7 +79,6 @@ export default function PaymentRegisterView(props) {
   async function submit(arg) {
     arg.preventDefault();
     try {
-      console.log(prev);
       const register = prev !== undefined ? axios.put : axios.post;
       const urlSuffix = prev !== undefined ? `payment/${prev.id}` :
         `group/${location.state.gid}/payment`;
