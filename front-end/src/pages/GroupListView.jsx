@@ -20,10 +20,8 @@ function GroupItemView(props) {
 
   const { group, setProcessing } = props;
   const [_processing, payments] = useRequest(
-    '/v1/payment', {
-      groupId: group.id,
-      ..._buildDateRange()
-    }, [], []);
+    `/v1/group/${group.id}/payment`,
+    _buildDateRange(), [], []);
 
   useEffect(() => {
     setProcessing(_processing);
