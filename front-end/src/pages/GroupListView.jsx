@@ -4,7 +4,6 @@ import { Button } from 'react-bootstrap';
 import useRequest from '@/common/useRequest';
 import ProcessingSpinner from '@/common/ProcessingSpinner';
 import SummaryBySign from '@/components/SummaryBySign';
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function _buildDateRange() {
@@ -15,17 +14,11 @@ function _buildDateRange() {
   }
 }
 
-function GroupItemView(props) {
+function GroupItemView({ group }) {
   const navigate = useNavigate();
-
-  const { group, setProcessing } = props;
   const [_processing, payments] = useRequest(
     `/v1/group/${group.id}/payment`,
     _buildDateRange(), [], []);
-
-  useEffect(() => {
-    setProcessing(_processing);
-  }, [_processing, setProcessing]);
 
   return (
     <section
@@ -38,6 +31,7 @@ function GroupItemView(props) {
           payments={payments}
           className="bilateral-align"
         />
+        <ProcessingSpinner processing={_processing} />
       </main>
       <footer className="group-item-footer">
         <Button
@@ -70,13 +64,8 @@ function GroupItemView(props) {
 }
 
 export default function GroupListView(props) {
-  const [processing, setProcessing] = useState();
   const [_processing, groups] = useRequest(
     '/v1/group', { email: props.userInfo.email }, [], []);
-
-  useEffect(() => {
-    setProcessing(_processing);
-  }, [_processing]);
 
   return (
     <article className="abs-group">
@@ -84,7 +73,6 @@ export default function GroupListView(props) {
         <GroupItemView
           group={group}
           key={group.id}
-          setProcessing={setProcessing}
         />)}
       <section className="group-creation">
         <Button
@@ -93,7 +81,7 @@ export default function GroupListView(props) {
           disabled
         ><AiOutlinePlus /></Button>
       </section>
-      <ProcessingSpinner processing={processing} />
+      <ProcessingSpinner processing={_processing} />
     </article>
   );
 }
