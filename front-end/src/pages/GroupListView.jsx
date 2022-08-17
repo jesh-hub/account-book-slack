@@ -2,6 +2,7 @@ import '@/pages/GroupListView.scss';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { Button } from 'react-bootstrap';
 import useRequest from '@/common/useRequest';
+import useRouterNavigateWith from '@/common/useRouterNavigateWith';
 import ProcessingSpinner from '@/common/ProcessingSpinner';
 import SummaryBySign from '@/components/SummaryBySign';
 import { useNavigate } from 'react-router-dom';
@@ -15,7 +16,7 @@ function _buildDateRange() {
 }
 
 function GroupItemView({ group }) {
-  const navigate = useNavigate();
+  const navigateWith = useRouterNavigateWith();
   const [_processing, payments] = useRequest(
     `/v1/group/${group.id}/payment`,
     _buildDateRange(), [], []);
@@ -39,9 +40,7 @@ function GroupItemView({ group }) {
           variant="clear"
           className="footer-action"
           onClick={() => {
-            navigate('/payments/register', {
-              state: { gid: group.id }
-            });
+            navigateWith('/payments/register', { gid: group.id });
           }}
         >내역 등록</Button>
         <div className="action-divider" />
@@ -50,11 +49,9 @@ function GroupItemView({ group }) {
           variant="clear"
           className="footer-action"
           onClick={() => {
-            navigate(`/payments`, {
-              state: {
+            navigateWith(`/payments`, {
                 gid: group.id,
                 payments
-              }
             });
           }}
         >내역 확인</Button>
