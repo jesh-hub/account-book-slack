@@ -29,7 +29,7 @@ export default function MainApp() {
           <Nav className="main-nav">
             <Nav.Link
               as={Link}
-              to="/group"
+              to="/groups"
               className="nav-item"
             ><RiGroup2Fill /></Nav.Link>
           </Nav>

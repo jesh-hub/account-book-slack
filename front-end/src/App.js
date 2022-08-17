@@ -30,7 +30,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<MainApp />} >
-            <Route path="group" element={<GroupListView userInfo={userInfo} />} />
+            <Route path="groups" element={<GroupListView userInfo={userInfo} />} />
             <Route path="payments" element={<PaymentListView />} />
             <Route path="payments/register" element={<PaymentRegisterView userInfo={userInfo} />} />
           </Route>
