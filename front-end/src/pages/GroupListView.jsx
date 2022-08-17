@@ -1,5 +1,4 @@
 import '@/pages/GroupListView.scss';
-import { AiOutlinePlus } from 'react-icons/ai';
 import { Button } from 'react-bootstrap';
 import useRequest from '@/common/useRequest';
 import useRouterNavigateWith from '@/common/useRouterNavigateWith';
@@ -50,8 +49,8 @@ function GroupItemView({ group }) {
           className="footer-action"
           onClick={() => {
             navigateWith(`/payments`, {
-                gid: group.id,
-                payments
+              gid: group.id,
+              payments
             });
           }}
         >내역 확인</Button>
@@ -61,6 +60,7 @@ function GroupItemView({ group }) {
 }
 
 export default function GroupListView(props) {
+  const navigate = useNavigate();
   const [_processing, groups] = useRequest(
     '/v1/group', { email: props.userInfo.email }, [], []);
 
@@ -75,8 +75,11 @@ export default function GroupListView(props) {
         <Button
           className="w-100"
           variant="outline-primary"
-          disabled
-        ><AiOutlinePlus /></Button>
+          size="sm"
+          onClick={() => {
+            navigate('/groups/register');
+          }}
+        >새 그룹 만들기</Button>
       </section>
       <ProcessingSpinner processing={_processing} />
     </article>
