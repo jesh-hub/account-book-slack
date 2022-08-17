@@ -111,3 +111,22 @@ func UpdateGroup(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, group)
 }
+
+// DeleteGroup
+// @Summary Delete group
+// @Description 그룹 삭제
+// @Tags group
+// @Accept json
+// @Param id path string true "Group ID"
+// @Success 200
+// @Router /v1/group/{groupId} [delete]
+func DeleteGroup(c *gin.Context) {
+	id := c.Param("groupId")
+
+	err := service.DeleteGroup(id)
+	if err != nil {
+		util.ErrorHandler(c, 500, err)
+		return
+	}
+	c.Status(http.StatusOK)
+}
