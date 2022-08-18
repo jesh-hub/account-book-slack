@@ -117,7 +117,7 @@ func UpdateGroup(c *gin.Context) {
 // @Description 그룹 삭제
 // @Tags group
 // @Accept json
-// @Param id path string true "Group ID"
+// @Param groupId path string true "Group ID"
 // @Success 200
 // @Router /v1/group/{groupId} [delete]
 func DeleteGroup(c *gin.Context) {
