@@ -32,7 +32,7 @@ function App() {
         <Routes>
           <Route path="/" element={<MainApp />} >
             <Route path="groups" element={<GroupListView userInfo={userInfo} />} />
-            <Route path="groups/register" element={<GroupRegisterView />} />
+            <Route path="groups/register" element={<GroupRegisterView userInfo={userInfo} />} />
             <Route path="payments" element={<PaymentListView />} />
             <Route path="payments/register" element={<PaymentRegisterView userInfo={userInfo} />} />
           </Route>
