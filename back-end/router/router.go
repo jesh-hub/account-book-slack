@@ -14,6 +14,7 @@ func NewAbsRouterV1(r *gin.Engine) *gin.RouterGroup {
 		v1.GET("/group", controller.FindGroup)
 		v1.POST("/group", controller.AddGroup)
 		v1.PUT("/group/:groupId", controller.UpdateGroup)
+		v1.DELETE("/group/:groupId", controller.DeleteGroup)
 		// payment method
 		v1.GET("/group/:groupId/paymentMethod", controller.FindPaymentMethodByGroupId)
 		v1.POST("/group/:groupId/paymentMethod", controller.AddPaymentMethod)

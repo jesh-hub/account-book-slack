@@ -22,6 +22,20 @@ func AddGroup(group *model.Group) (*model.Group, error) {
 	return group, err
 }
 
+func DeleteGroup(groupId string) error {
+	groupColl := mgm.Coll(&model.Group{})
+	group, err := FindGroupById(model.GroupFind{Id: groupId})
+	if err != nil {
+		return err
+	}
+
+	err = groupColl.Delete(group)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func FindGroupById(groupFind model.GroupFind) (*model.Group, error) {
 	groupColl := mgm.Coll(&model.Group{})
 	group := &model.Group{}
