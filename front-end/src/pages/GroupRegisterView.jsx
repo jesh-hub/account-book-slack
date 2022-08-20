@@ -1,5 +1,5 @@
 import '@/pages/GroupRegisterView.scss';
-import { Badge, Button, Col, Form, Row } from 'react-bootstrap';
+import { Badge, Button, Col, Form, Row, Spinner } from 'react-bootstrap';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -9,6 +9,7 @@ const BadgeText = [undefined, 'dark'];
 
 export default function GroupRegisterView(props) {
   const navigate = useNavigate();
+  const [processing, setProcessing] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -53,17 +54,20 @@ export default function GroupRegisterView(props) {
   async function submit(evt) {
     evt.preventDefault();
     try {
+      setProcessing(true);
       await axios.post('/v1/group', {
         name: formData.name,
         users: [props.userInfo.email].concat(apiData.email),
         regUserId: props.userInfo.id,
-        paymentMethods: apiData.paymentMethod.map(method => ({
+        PaymentMethodAdd: apiData.paymentMethod.map(method => ({
           name: method,
           default: false
         }))
       });
+      setProcessing(false);
       navigate(-1);
     } catch (e) {
+      setProcessing(false);
       console.log(e);
     }
   }
@@ -169,8 +173,9 @@ export default function GroupRegisterView(props) {
         <Button
           className="w-100"
           type="submit"
+          disabled={processing}
         >
-          등록
+          {processing ? <Spinner animation="border" variant="light" size="sm" /> : '등록'}
         </Button>
       </Form>
     </article>
