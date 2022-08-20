@@ -23,6 +23,10 @@ func AddGroup(groupAdd *model.GroupAdd) (*model.Group, error) {
 	// Add group
 	group := groupAdd.ToEntity()
 	err := groupColl.Create(group)
+	if err != nil {
+		return nil, err
+
+	}
 
 	// Add paymentMethods
 	if groupAdd.PaymentMethodAdd != nil {
