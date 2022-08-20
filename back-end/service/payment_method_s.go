@@ -7,8 +7,10 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func AddPaymentMethod(groupId string, paymentMethod *model.PaymentMethod) (*model.PaymentMethod, error) {
+func AddPaymentMethod(groupId string, paymentMethodAdd *model.PaymentMethodAdd) (*model.PaymentMethod, error) {
 	paymentMethodColl := mgm.Coll(&model.PaymentMethod{})
+	paymentMethod := paymentMethodAdd.ToEntity()
+
 	paymentMethod.GroupId = util.ConvertStringToObjectId(groupId)
 	err := paymentMethodColl.Create(paymentMethod)
 	return paymentMethod, err
@@ -30,9 +32,7 @@ func UpdatePaymentMethod(paymentMethodId string, paymentMethodUpdate *model.Paym
 		return nil, err
 	}
 
-	paymentMethod.Name = paymentMethodUpdate.Name
-	paymentMethod.Default = paymentMethodUpdate.Default
-
+	paymentMethodUpdate.ToEntity(paymentMethod)
 	err = paymentMethodColl.Update(paymentMethod)
 	return paymentMethod, err
 }

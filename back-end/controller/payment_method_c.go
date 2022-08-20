@@ -15,18 +15,18 @@ import (
 // @Accept json
 // @Produce json
 // @Param groupId path string true "Group ID"
-// @Param paymentMethod body model.PaymentMethod true "PaymentMethod"
+// @Param paymentMethodAdd body model.PaymentMethodAdd true "PaymentMethodAdd"
 // @Success 200 {object} model.PaymentMethod
 // @Router /v1/group/{groupId}/paymentMethod [post]
 func AddPaymentMethod(c *gin.Context) {
 	groupId := c.Param("groupId")
-	paymentMethod := &model.PaymentMethod{}
-	if err := c.ShouldBindJSON(paymentMethod); err != nil {
+	paymentMethodAdd := &model.PaymentMethodAdd{}
+	if err := c.ShouldBindJSON(paymentMethodAdd); err != nil {
 		util.ErrorHandler(c, 400, err)
 		return
 	}
 
-	paymentMethod, err := service.AddPaymentMethod(groupId, paymentMethod)
+	paymentMethod, err := service.AddPaymentMethod(groupId, paymentMethodAdd)
 	if err != nil {
 		util.ErrorHandler(c, 500, err)
 		return

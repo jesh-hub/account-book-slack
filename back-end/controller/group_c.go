@@ -15,17 +15,17 @@ import (
 // @Tags group
 // @Accept json
 // @Produce json
-// @Param payment body model.Group true "Group"
+// @Param groupAdd body model.GroupAdd true "GroupAdd"
 // @Success 200 {object} model.Group
 // @Router /v1/group [post]
 func AddGroup(c *gin.Context) {
-	group := &model.Group{}
-	if err := c.ShouldBindJSON(group); err != nil {
+	groupAdd := &model.GroupAdd{}
+	if err := c.ShouldBindJSON(groupAdd); err != nil {
 		util.ErrorHandler(c, 400, err)
 		return
 	}
 
-	group, err := service.AddGroup(group)
+	group, err := service.AddGroup(groupAdd)
 	if err != nil {
 		util.ErrorHandler(c, 500, err)
 		return
