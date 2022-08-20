@@ -55,7 +55,7 @@ export default function GroupRegisterView(props) {
     evt.preventDefault();
     try {
       setProcessing(true);
-      await axios.post('/v1/group', {
+      await axios.post(`${process.env.REACT_APP_ABS}/v1/group`, {
         name: formData.name,
         users: [props.userInfo.email].concat(apiData.email),
         regUserId: props.userInfo.id,
