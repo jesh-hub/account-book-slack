@@ -11,12 +11,12 @@
         gap: .5rem;
       }
 
-      > .invited-emails {
+      > ul {
         margin: 0.75rem 0 0;
         padding: 0;
         list-style: none;
 
-        > .li__email {
+        > li {
           display: flex;
           align-items: center;
         }

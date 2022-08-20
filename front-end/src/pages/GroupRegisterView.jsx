@@ -1,8 +1,8 @@
 import '@/pages/GroupRegisterView.scss';
 import { Badge, Button, Col, Form, Row } from 'react-bootstrap';
 import { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const BadgeBg = ['info', 'light'];
 const BadgeText = [undefined, 'dark'];
@@ -27,7 +27,7 @@ export default function GroupRegisterView(props) {
     }));
   }
 
-  function handleApiDataChanged(name) {
+  function handleApiDataAdded(name) {
     if (apiData[name].includes(formData[name]))
       return;
     setApiData(apiData => ({
@@ -40,7 +40,7 @@ export default function GroupRegisterView(props) {
     }));
   }
 
-  function removeApiData(name, value) {
+  function handleApiDataRemoved(name, value) {
     const index = apiData[name].indexOf(value);
     if (index < 0)
       return;
@@ -57,8 +57,10 @@ export default function GroupRegisterView(props) {
         name: formData.name,
         users: [props.userInfo.email].concat(apiData.email),
         regUserId: props.userInfo.id,
-        modUserId: props.userInfo.id,
-        paymentMethod: apiData.paymentMethod
+        paymentMethods: apiData.paymentMethod.map(method => ({
+          name: method,
+          default: false
+        }))
       });
       navigate(-1);
     } catch (e) {
@@ -82,7 +84,7 @@ export default function GroupRegisterView(props) {
             required
           />
         </Form.Group>
-        {/* 이 밑으로 두 개 중복 코드 */}
+        {/* 이 밑으로 두 개 form group 비슷한 코드 */}
         <Form.Group className="register-row-group">
           <Form.Label>그룹 구성원 추가하기</Form.Label>
           <Row className="register-row">
@@ -90,6 +92,7 @@ export default function GroupRegisterView(props) {
               as={Form.Control}
               name="email"
               value={formData.email}
+              type="email"
               placeholder="초대할 이메일"
               onChange={handleFormDataChanged}
             />
@@ -99,18 +102,15 @@ export default function GroupRegisterView(props) {
               variant="outline-primary"
               // TODO 이메일 형식에 맞지 않으면 disable
               // TODO 이미 추가한 이메일이면 disable
-              onClick={() => handleApiDataChanged('email')}
+              onClick={() => handleApiDataAdded('email')}
             >
               추가
             </Col>
           </Row>
-          <ul className="invited-emails">
+          <ul>
             {
               apiData.email.map((email, i) => (
-                <li
-                  key={email}
-                  className="li__email"
-                >
+                <li key={email}>
                   <Badge
                     size="sm"
                     bg={BadgeBg[i % 2]}
@@ -119,7 +119,7 @@ export default function GroupRegisterView(props) {
                   <Button
                     size="xs"
                     variant="clear"
-                    onClick={() => removeApiData('email', email)}
+                    onClick={() => handleApiDataRemoved('email', email)}
                   >x</Button>
                 </li>
               ))
@@ -133,6 +133,7 @@ export default function GroupRegisterView(props) {
               as={Form.Control}
               name="paymentMethod"
               value={formData.paymentMethod}
+              type="text"
               placeholder="결제 수단 이름"
               onChange={handleFormDataChanged}
             />
@@ -141,18 +142,15 @@ export default function GroupRegisterView(props) {
               className="col-3"
               variant="outline-primary"
               // TODO 이미 추가한 결제 수단이면 disable
-              onClick={() => handleApiDataChanged('paymentMethod')}
+              onClick={() => handleApiDataAdded('paymentMethod')}
             >
               추가
             </Col>
           </Row>
-          <ul className="invited-emails">
+          <ul>
             {
               apiData.paymentMethod.map((method, i) => (
-                <li
-                  key={method}
-                  className="li__email"
-                >
+                <li key={method}>
                   <Badge
                     size="sm"
                     bg={BadgeBg[i % 2]}
@@ -161,7 +159,7 @@ export default function GroupRegisterView(props) {
                   <Button
                     size="xs"
                     variant="clear"
-                    onClick={() => removeApiData('paymentMethod', method)}
+                    onClick={() => handleApiDataRemoved('paymentMethod', method)}
                   >x</Button>
                 </li>
               ))
