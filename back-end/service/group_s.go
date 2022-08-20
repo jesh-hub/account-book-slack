@@ -5,6 +5,7 @@ import (
 	"github.com/kamva/mgm/v3"
 	"github.com/kamva/mgm/v3/builder"
 	"github.com/kamva/mgm/v3/operator"
+	"github.com/labstack/gommon/log"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -16,9 +17,23 @@ func NewFindGroupParam() model.GroupFind {
 	}
 }
 
-func AddGroup(group *model.Group) (*model.Group, error) {
+func AddGroup(groupAdd *model.GroupAdd) (*model.Group, error) {
 	groupColl := mgm.Coll(&model.Group{})
+
+	// Add group
+	group := groupAdd.ToEntity()
 	err := groupColl.Create(group)
+
+	// Add paymentMethods
+	if groupAdd.PaymentMethodAdd != nil {
+		for _, paymentMethodAdd := range *groupAdd.PaymentMethodAdd {
+			_, err := AddPaymentMethod(group.ID.Hex(), &paymentMethodAdd)
+			if err != nil {
+				log.Info(err)
+			}
+		}
+	}
+
 	return group, err
 }
 
@@ -77,10 +92,7 @@ func UpdateGroup(id string, groupUpdate *model.GroupUpdate) (*model.Group, error
 		return nil, err
 	}
 
-	group.Name = groupUpdate.Name
-	group.Users = groupUpdate.Users
-	group.ModUserId = groupUpdate.ModUserId
-
+	groupUpdate.ToEntity(group)
 	err = groupColl.Update(group)
 	return group, err
 }
