@@ -10,10 +10,10 @@ categories:
   - title: '🚀 Features'
     labels:
       - 'feature'
-      - 'enhancement'
   - title: '⚡️ Improvements'
     labels:
       - 'improvement'
+      - 'enhancement'
       - 'refactor'
   - title: '🐛 Bug Fixes'
     labels:
@@ -36,6 +36,7 @@ version-resolver:
   minor:
     labels:
       - 'minor'
+      - 'feature'
   patch:
     labels:
       - 'patch'
