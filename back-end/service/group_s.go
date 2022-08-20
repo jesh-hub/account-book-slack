@@ -25,7 +25,6 @@ func AddGroup(groupAdd *model.GroupAdd) (*model.Group, error) {
 	err := groupColl.Create(group)
 	if err != nil {
 		return nil, err
-
 	}
 
 	// Add paymentMethods
