@@ -1,10 +1,9 @@
 import '@/pages/GroupListView.scss';
-import { AiOutlinePlus } from 'react-icons/ai';
 import { Button } from 'react-bootstrap';
 import useRequest from '@/common/useRequest';
+import useRouterNavigateWith from '@/common/useRouterNavigateWith';
 import ProcessingSpinner from '@/common/ProcessingSpinner';
 import SummaryBySign from '@/components/SummaryBySign';
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function _buildDateRange() {
@@ -15,17 +14,11 @@ function _buildDateRange() {
   }
 }
 
-function GroupItemView(props) {
-  const navigate = useNavigate();
-
-  const { group, setProcessing } = props;
+function GroupItemView({ group }) {
+  const navigateWith = useRouterNavigateWith();
   const [_processing, payments] = useRequest(
     `/v1/group/${group.id}/payment`,
     _buildDateRange(), [], []);
-
-  useEffect(() => {
-    setProcessing(_processing);
-  }, [_processing, setProcessing]);
 
   return (
     <section
@@ -38,6 +31,7 @@ function GroupItemView(props) {
           payments={payments}
           className="bilateral-align"
         />
+        <ProcessingSpinner processing={_processing} />
       </main>
       <footer className="group-item-footer">
         <Button
@@ -45,9 +39,7 @@ function GroupItemView(props) {
           variant="clear"
           className="footer-action"
           onClick={() => {
-            navigate('/payments/register', {
-              state: { gid: group.id }
-            });
+            navigateWith('/payments/register', { gid: group.id });
           }}
         >내역 등록</Button>
         <div className="action-divider" />
@@ -56,11 +48,9 @@ function GroupItemView(props) {
           variant="clear"
           className="footer-action"
           onClick={() => {
-            navigate(`/payments`, {
-              state: {
-                gid: group.id,
-                payments
-              }
+            navigateWith(`/payments`, {
+              gid: group.id,
+              payments
             });
           }}
         >내역 확인</Button>
@@ -70,13 +60,9 @@ function GroupItemView(props) {
 }
 
 export default function GroupListView(props) {
-  const [processing, setProcessing] = useState();
+  const navigate = useNavigate();
   const [_processing, groups] = useRequest(
     '/v1/group', { email: props.userInfo.email }, [], []);
-
-  useEffect(() => {
-    setProcessing(_processing);
-  }, [_processing]);
 
   return (
     <article className="abs-group">
@@ -84,16 +70,18 @@ export default function GroupListView(props) {
         <GroupItemView
           group={group}
           key={group.id}
-          setProcessing={setProcessing}
         />)}
       <section className="group-creation">
         <Button
           className="w-100"
           variant="outline-primary"
-          disabled
-        ><AiOutlinePlus /></Button>
+          size="sm"
+          onClick={() => {
+            navigate('/groups/register');
+          }}
+        >새 그룹 만들기</Button>
       </section>
-      <ProcessingSpinner processing={processing} />
+      <ProcessingSpinner processing={_processing} />
     </article>
   );
 }

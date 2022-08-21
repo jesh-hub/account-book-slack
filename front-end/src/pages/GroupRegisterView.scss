@@ -1,0 +1,26 @@
+.abs-group-register {
+  > .register-form {
+
+    >:not(:last-child) {
+      margin-bottom: 1.5rem;
+    }
+
+    > .register-row-group {
+      > .register-row {
+        --bs-gutter-x: 0;
+        gap: .5rem;
+      }
+
+      > ul {
+        margin: 0.75rem 0 0;
+        padding: 0;
+        list-style: none;
+
+        > li {
+          display: flex;
+          align-items: center;
+        }
+      }
+    }
+  }
+}
