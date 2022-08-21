@@ -47,6 +47,7 @@ func DeleteGroup(groupId string) error {
 		return err
 	}
 
+	// 그룹 삭제
 	err = groupColl.Delete(group)
 	if err != nil {
 		return err
@@ -71,8 +72,8 @@ func FindGroupByEmail(param model.GroupFind) (*[]model.Group, error) {
 	groups := &[]model.Group{}
 
 	q := bson.M{"users": param.Email}
-	var err error
 
+	var err error
 	if param.WithPaymentMethod {
 		paymentMethodColl := mgm.Coll(&model.PaymentMethod{}).Name()
 		err = groupColl.SimpleAggregate(

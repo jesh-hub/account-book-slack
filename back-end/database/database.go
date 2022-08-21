@@ -4,6 +4,7 @@ import (
 	"abs/util"
 	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"log"
 )
 
 func Init() {
@@ -12,5 +13,7 @@ func Init() {
 	dbName := util.GodotEnv("DB_NAME")
 
 	err := mgm.SetDefaultConfig(nil, dbName, options.Client().ApplyURI("mongodb+srv://"+auth+"@"+host+"/?retryWrites=true&w=majority"))
-	util.ErrorHandlerInternal(err)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
