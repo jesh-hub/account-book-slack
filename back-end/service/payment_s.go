@@ -27,6 +27,23 @@ func AddPayment(groupId string, paymentAdd *model.PaymentAdd) (*model.Payment, e
 	return payment, err
 }
 
+func DeletePaymentMany(groupId string) error {
+	paymentColl := mgm.Coll(&model.Payment{})
+	ctx := mgm.Ctx()
+
+	groupObjectId, err := primitive.ObjectIDFromHex(groupId)
+	if err != nil {
+		return err
+	}
+
+	results, err := paymentColl.DeleteMany(ctx, bson.M{"groupId": groupObjectId}, nil)
+	log.Printf("Delete payments : %d", results.DeletedCount)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func FindPayment(groupId string, paymentFind model.PaymentFind) (*[]model.Payment, error) {
 	paymentColl := mgm.Coll(&model.Payment{})
 	payments := &[]model.Payment{}

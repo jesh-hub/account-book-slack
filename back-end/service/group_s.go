@@ -52,6 +52,10 @@ func DeleteGroup(groupId string) error {
 	if err != nil {
 		return err
 	}
+
+	// 그룹 관련 데이터 삭제
+	go DeletePaymentMany(groupId)
+	go DeletePaymentMethodMany(groupId)
 	return nil
 }
 
