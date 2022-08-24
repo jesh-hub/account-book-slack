@@ -29,7 +29,7 @@ type PaymentMethodUpdate struct {
 	Default bool   `json:"default" bson:"default"`
 }
 
-func (pmu *PaymentMethodUpdate) ToEntity(paymentMethod *PaymentMethod) {
+func (pmu *PaymentMethodUpdate) UpdateEntity(paymentMethod *PaymentMethod) {
 	paymentMethod.Name = pmu.Name
 	paymentMethod.Default = pmu.Default
 }

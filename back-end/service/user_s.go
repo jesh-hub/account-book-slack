@@ -24,12 +24,14 @@ func Login(param *LoginParam) (*model.User, error) {
 	userColl := mgm.Coll(&model.User{})
 	user := &model.User{}
 	err = userColl.First(bson.M{"email": email}, user)
+
+	// user가 없을 경우 등록
 	if err == mongo.ErrNoDocuments {
 		user.Email = email
 		err = userColl.Create(user)
 	}
 
-	// Set value(name, picture) from google
+	// Set value(name, picture) from Google
 	user = setUserinfo(user, claims)
 	return user, err
 }

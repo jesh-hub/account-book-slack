@@ -1,28 +1,28 @@
 package router
 
 import (
-	"abs/controller"
+	"abs/router/api"
 	"github.com/gin-gonic/gin"
 )
 
 func NewAbsRouterV1(r *gin.Engine) *gin.RouterGroup {
 	v1 := r.Group("/v1")
 	{
-		v1.POST("/login", controller.Login)
+		v1.POST("/login", api.Login)
 		// group
-		v1.GET("/group/:groupId", controller.FindGroupById)
-		v1.GET("/group", controller.FindGroup)
-		v1.POST("/group", controller.AddGroup)
-		v1.PUT("/group/:groupId", controller.UpdateGroup)
-		v1.DELETE("/group/:groupId", controller.DeleteGroup)
+		v1.GET("/group/:groupId", api.FindGroupById)
+		v1.GET("/group", api.FindGroup)
+		v1.POST("/group", api.AddGroup)
+		v1.PUT("/group/:groupId", api.UpdateGroup)
+		v1.DELETE("/group/:groupId", api.DeleteGroup)
 		// payment method
-		v1.GET("/group/:groupId/paymentMethod", controller.FindPaymentMethodByGroupId)
-		v1.POST("/group/:groupId/paymentMethod", controller.AddPaymentMethod)
-		v1.PUT("/paymentMethod/:paymentMethodId", controller.UpdatePaymentMethod)
+		v1.GET("/group/:groupId/paymentMethod", api.FindPaymentMethodByGroupId)
+		v1.POST("/group/:groupId/paymentMethod", api.AddPaymentMethod)
+		v1.PUT("/paymentMethod/:paymentMethodId", api.UpdatePaymentMethod)
 		// Payment
-		v1.GET("/group/:groupId/payment", controller.FindPayment)
-		v1.POST("/group/:groupId/payment", controller.AddPayment)
-		v1.PUT("/payment/:paymentId", controller.UpdatePayment)
+		v1.GET("/group/:groupId/payment", api.FindPayment)
+		v1.POST("/group/:groupId/payment", api.AddPayment)
+		v1.PUT("/payment/:paymentId", api.UpdatePayment)
 	}
 	return v1
 }

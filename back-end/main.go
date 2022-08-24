@@ -20,8 +20,12 @@ func init() {
 	database.Init()
 
 	r := gin.Default()
+
+	r.Use(middleware.AllowPreflight)
 	r.Use(middleware.SetHeader)
+
 	router.NewAbsRouterV1(r)
+
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	ginLambda = ginadapter.NewV2(r)
 }

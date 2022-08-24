@@ -2,29 +2,59 @@ package service
 
 import (
 	"abs/model"
-	"abs/util"
 	"github.com/kamva/mgm/v3"
 	"github.com/kamva/mgm/v3/builder"
 	"github.com/kamva/mgm/v3/operator"
+	"github.com/labstack/gommon/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"
 )
 
-func AddPayment(groupId string, payment *model.Payment) (*model.Payment, error) {
+func AddPayment(groupId string, paymentAdd *model.PaymentAdd) (*model.Payment, error) {
 	paymentColl := mgm.Coll(&model.Payment{})
-	payment.GroupId = util.ConvertStringToObjectId(groupId)
-	err := paymentColl.Create(payment)
+
+	groupObjectId, err := primitive.ObjectIDFromHex(groupId)
+	if err != nil {
+		return nil, err
+	}
+
+	payment := paymentAdd.ToEntity()
+	payment.GroupId = groupObjectId
+
+	err = paymentColl.Create(payment)
 	return payment, err
+}
+
+func DeletePaymentMany(groupId string) error {
+	paymentColl := mgm.Coll(&model.Payment{})
+	ctx := mgm.Ctx()
+
+	groupObjectId, err := primitive.ObjectIDFromHex(groupId)
+	if err != nil {
+		return err
+	}
+
+	results, err := paymentColl.DeleteMany(ctx, bson.M{"groupId": groupObjectId}, nil)
+	log.Printf("Delete payments : %d", results.DeletedCount)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func FindPayment(groupId string, paymentFind model.PaymentFind) (*[]model.Payment, error) {
 	paymentColl := mgm.Coll(&model.Payment{})
 	payments := &[]model.Payment{}
 
+	groupObjectId, err := primitive.ObjectIDFromHex(groupId)
+	if err != nil {
+		return nil, err
+	}
+
 	q := bson.M{
-		"groupId": util.ConvertStringToObjectId(groupId),
+		"groupId": groupObjectId,
 	}
 	// when [start, end] parameter id existed
 	if len(paymentFind.DateFrom) > 0 && len(paymentFind.DateTo) > 0 {
@@ -53,7 +83,7 @@ func FindPayment(groupId string, paymentFind model.PaymentFind) (*[]model.Paymen
 	opts.SetSort(sort)
 
 	paymentMethodColl := mgm.Coll(&model.PaymentMethod{}).Name()
-	err := paymentColl.SimpleAggregate(
+	err = paymentColl.SimpleAggregate(
 		payments,
 		builder.Lookup(paymentMethodColl, "paymentMethodId", "_id", "paymentMethods"),
 		bson.M{operator.Match: q},
@@ -70,13 +100,7 @@ func UpdatePayment(paymentId string, paymentUpdate *model.PaymentUpdate) (*model
 		return nil, err
 	}
 
-	payment.Date = paymentUpdate.Date
-	payment.Name = paymentUpdate.Name
-	payment.Price = paymentUpdate.Price
-	payment.Category = paymentUpdate.Category
-	payment.ModUserId = paymentUpdate.ModUserId
-	payment.PaymentMethodId = paymentUpdate.PaymentMethodId
-	payment.MonthlyInstallment = paymentUpdate.MonthlyInstallment
+	paymentUpdate.UpdateEntity(payment)
 
 	err = paymentColl.Update(payment)
 	return payment, err
