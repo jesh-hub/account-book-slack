@@ -1,4 +1,4 @@
-import '@/pages/GroupListView.scss';
+import '@/pages/GroupList.scss';
 import { Button } from 'react-bootstrap';
 import useRequest from '@/common/useRequest';
 import useRouterNavigateWith from '@/common/useRouterNavigateWith';
@@ -59,18 +59,20 @@ function GroupItemView({ group }) {
   );
 }
 
-export default function GroupListView(props) {
+export default function GroupList({ userInfo }) {
   const navigate = useNavigate();
   const [_processing, groups] = useRequest(
-    '/v1/group', { email: props.userInfo.email }, [], []);
+    '/v1/group', { email: userInfo.email }, [], []);
 
   return (
-    <article className="abs-group">
-      {groups.map(group =>
+    <article className="abs-groups">
+      {
+        groups.map(group =>
         <GroupItemView
           group={group}
           key={group.id}
-        />)}
+          />)
+      }
       <section className="group-creation">
         <Button
           className="w-100"
