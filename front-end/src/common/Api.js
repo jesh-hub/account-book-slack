@@ -1,19 +1,26 @@
 import axios from 'axios';
+import { useEffect, useState } from 'react';
 
-/**
- * @param {string} url
- * @param params
- * @returns {Promise<any>}
- */
-export async function get(url, params) {
-  const { data } = await axios.get(
-    `${process.env.REACT_APP_ABS}${url}`,
-    { params });
-  return data;
-}
+const API_END_POINT = process.env.REACT_APP_ABS;
 
-export async function getWithDispatch(dispatch, url, params) {
-  dispatch({ processing: true });
-  const data = await get(url, params);
-  dispatch({ processing: false, data });
+export function useGetRequest(url, params) {
+  const [processing, setProcessing] = useState(false);
+  const [response, setResponse] = useState([]);
+
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        setProcessing(true);
+        const { data } = await axios.get(`${API_END_POINT}${url}`, { params });
+        setResponse(data);
+      } finally {
+        setProcessing(false);
+      }
+    };
+
+    fetch().then();
+  // eslint-disable-next-line
+  }, []);
+
+  return [response, processing];
 }
