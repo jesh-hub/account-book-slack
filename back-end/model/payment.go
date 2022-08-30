@@ -16,7 +16,7 @@ type Payment struct {
 	GroupId            primitive.ObjectID `json:"groupId" bson:"groupId"`
 	RegUserId          string             `json:"regUserId" bson:"regUserId"`
 	ModUserId          string             `json:"modUserId" bson:"modUserId"`
-	PaymentMethods     *[]PaymentMethod   `json:"paymentMethods"`
+	PaymentMethods     []*PaymentMethod   `json:"paymentMethods"`
 }
 
 type PaymentAdd struct {

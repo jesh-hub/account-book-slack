@@ -29,8 +29,8 @@ func AddGroup(groupAdd *model.GroupAdd) (*model.Group, error) {
 
 	// Add paymentMethods
 	if groupAdd.PaymentMethodAdd != nil {
-		for _, paymentMethodAdd := range *groupAdd.PaymentMethodAdd {
-			_, err := AddPaymentMethod(group.ID.Hex(), &paymentMethodAdd)
+		for _, paymentMethodAdd := range groupAdd.PaymentMethodAdd {
+			_, err := AddPaymentMethod(group.ID.Hex(), paymentMethodAdd)
 			if err != nil {
 				log.Info(err)
 			}
@@ -71,9 +71,9 @@ func FindGroupById(groupFind model.GroupFind) (*model.Group, error) {
 	return group, err
 }
 
-func FindGroupByEmail(param model.GroupFind) (*[]model.Group, error) {
+func FindGroupByEmail(param model.GroupFind) ([]*model.Group, error) {
 	groupColl := mgm.Coll(&model.Group{})
-	groups := &[]model.Group{}
+	var groups []*model.Group
 
 	q := bson.M{"users": param.Email}
 
@@ -81,12 +81,12 @@ func FindGroupByEmail(param model.GroupFind) (*[]model.Group, error) {
 	if param.WithPaymentMethod {
 		paymentMethodColl := mgm.Coll(&model.PaymentMethod{}).Name()
 		err = groupColl.SimpleAggregate(
-			groups,
+			&groups,
 			builder.Lookup(paymentMethodColl, "_id", "groupId", "paymentMethods"),
 			bson.M{operator.Match: q},
 		)
 	} else {
-		err = groupColl.SimpleFind(groups, q)
+		err = groupColl.SimpleFind(&groups, q)
 	}
 	return groups, err
 }

@@ -39,16 +39,16 @@ func DeletePaymentMethodMany(groupId string) error {
 	return nil
 }
 
-func FindPaymentMethodByGroupId(groupId string) (*[]model.PaymentMethod, error) {
+func FindPaymentMethodByGroupId(groupId string) ([]*model.PaymentMethod, error) {
 	paymentMethodColl := mgm.Coll(&model.PaymentMethod{})
-	paymentMethods := &[]model.PaymentMethod{}
+	var paymentMethods []*model.PaymentMethod
 
 	groupObjectId, err := primitive.ObjectIDFromHex(groupId)
 	if err != nil {
 		return nil, err
 	}
 
-	err = paymentMethodColl.SimpleFind(paymentMethods, bson.M{"groupId": groupObjectId})
+	err = paymentMethodColl.SimpleFind(&paymentMethods, bson.M{"groupId": groupObjectId})
 	return paymentMethods, err
 }
 
