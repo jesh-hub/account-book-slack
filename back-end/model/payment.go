@@ -71,3 +71,8 @@ func (pu *PaymentUpdate) UpdateEntity(payment *Payment) {
 		payment.MonthlyInstallment = pu.MonthlyInstallment
 	}
 }
+
+type PaymentStatistics struct {
+	TotalIncome      int `json:"totalIncome" bson:"totalIncome"`
+	TotalExpenditure int `json:"totalExpenditure" bson:"totalExpenditure"`
+}

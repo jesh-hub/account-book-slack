@@ -41,14 +41,12 @@ func AddPayment(c *gin.Context) {
 // FindPayment
 // @Summary Find payment
 // @Description 결제내역 조회
-// @Description Date 관련 파라미터 있을 경우 : DateFrom <= 데이터 < DateTo
-// @Description Date 관련 파라미터 없을 경우 : 전체 기간 조회
 // @Tags payment
 // @Accept json
 // @Produce json
 // @Param groupId path string true "Group ID"
-// @Param dateFrom query string false "Format like 2006-01"
-// @Param dateTo query string false "Format like 2006-01"
+// @Param dateFrom query string false "DateFrom <= 파라미터 값, Format : 2006-01 (없을 경우 전체 조회)"
+// @Param dateTo query string false "파라미터 값 < DateTo, Format : 2006-01 (없을 경우 전체 조회)"
 // @Success 200 {array} model.Payment
 // @Failure 500 {object} util.AppError
 // @Router /v1/group/{groupId}/payment [get]
@@ -66,6 +64,42 @@ func FindPayment(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, payments)
+}
+
+// GetPaymentStatistics
+// @Summary Get payment sum
+// @Description 결제내역 월 합계 조회
+// @Description Date 관련 파라미터 있을 경우 : DateFrom <= 데이터 < DateTo
+// @Description Date 관련 파라미터 없을 경우 : 전체 기간 조회
+// @Tags payment
+// @Accept json
+// @Produce json
+// @Param groupId path string true "Group ID"
+// @Param dateFrom query string false "DateFrom <= 파라미터 값, Format : 2006-01 (없을 경우 전체 조회)"
+// @Param dateTo query string false "파라미터 값 < DateTo, Format : 2006-01 (없을 경우 전체 조회)"
+// @Success 200 {object} model.PaymentStatistics
+// @Failure 500 {object} util.AppError
+// @Router /v1/group/{groupId}/payment/statistics [get]
+func GetPaymentStatistics(c *gin.Context) {
+	groupId := c.Param("groupId")
+	paymentFind := model.PaymentFind{
+		DateFrom: c.Query("dateFrom"),
+		DateTo:   c.Query("dateTo"),
+	}
+
+	payments, err := service.FindPayment(groupId, paymentFind)
+	if err != nil {
+		log.Info(err)
+		c.JSON(http.StatusInternalServerError, util.NewAppError(err))
+		return
+	}
+	getPaymentStatistics, err := service.GetPaymentStatistics(payments)
+	if err != nil {
+		log.Info(err)
+		c.JSON(http.StatusInternalServerError, util.NewAppError(err))
+		return
+	}
+	c.JSON(http.StatusOK, getPaymentStatistics)
 }
 
 // UpdatePayment

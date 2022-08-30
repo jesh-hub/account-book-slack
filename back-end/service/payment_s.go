@@ -91,6 +91,18 @@ func FindPayment(groupId string, paymentFind model.PaymentFind) (*[]model.Paymen
 	return payments, err
 }
 
+func GetPaymentStatistics(payments []*model.Payment) (*model.PaymentStatistics, error) {
+	paymentStatistics := &model.PaymentStatistics{}
+	for _, payment := range payments {
+		if payment.Price > 0 {
+			paymentStatistics.TotalIncome += payment.Price
+		} else {
+			paymentStatistics.TotalExpenditure += payment.Price
+		}
+	}
+	return paymentStatistics, nil
+}
+
 func UpdatePayment(paymentId string, paymentUpdate *model.PaymentUpdate) (*model.Payment, error) {
 	paymentColl := mgm.Coll(&model.Payment{})
 	payment := &model.Payment{}
