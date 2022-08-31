@@ -21,6 +21,7 @@ func NewAbsRouterV1(r *gin.Engine) *gin.RouterGroup {
 		v1.PUT("/paymentMethod/:paymentMethodId", api.UpdatePaymentMethod)
 		// Payment
 		v1.GET("/group/:groupId/payment", api.FindPayment)
+		v1.GET("/group/:groupId/payment/statistics", api.GetPaymentStatistics)
 		v1.POST("/group/:groupId/payment", api.AddPayment)
 		v1.PUT("/payment/:paymentId", api.UpdatePayment)
 	}

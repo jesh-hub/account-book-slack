@@ -44,18 +44,16 @@ func DeletePaymentMany(groupId string) error {
 	return nil
 }
 
-func FindPayment(groupId string, paymentFind model.PaymentFind) (*[]model.Payment, error) {
+func FindPayment(groupId string, paymentFind model.PaymentFind) ([]*model.Payment, error) {
 	paymentColl := mgm.Coll(&model.Payment{})
-	payments := &[]model.Payment{}
+	var payments []*model.Payment
 
 	groupObjectId, err := primitive.ObjectIDFromHex(groupId)
 	if err != nil {
 		return nil, err
 	}
 
-	q := bson.M{
-		"groupId": groupObjectId,
-	}
+	q := bson.M{"groupId": groupObjectId}
 	// when [start, end] parameter id existed
 	if len(paymentFind.DateFrom) > 0 && len(paymentFind.DateTo) > 0 {
 		startTime, _ := time.Parse("2006-01", paymentFind.DateFrom)
@@ -84,11 +82,23 @@ func FindPayment(groupId string, paymentFind model.PaymentFind) (*[]model.Paymen
 
 	paymentMethodColl := mgm.Coll(&model.PaymentMethod{}).Name()
 	err = paymentColl.SimpleAggregate(
-		payments,
+		&payments,
 		builder.Lookup(paymentMethodColl, "paymentMethodId", "_id", "paymentMethods"),
 		bson.M{operator.Match: q},
 	)
 	return payments, err
+}
+
+func GetPaymentStatistics(payments []*model.Payment) (*model.PaymentStatistics, error) {
+	paymentStatistics := &model.PaymentStatistics{}
+	for _, payment := range payments {
+		if payment.Price > 0 {
+			paymentStatistics.TotalIncome += payment.Price
+		} else {
+			paymentStatistics.TotalExpenditure += payment.Price
+		}
+	}
+	return paymentStatistics, nil
 }
 
 func UpdatePayment(paymentId string, paymentUpdate *model.PaymentUpdate) (*model.Payment, error) {

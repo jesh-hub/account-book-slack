@@ -8,14 +8,14 @@ type Group struct {
 	Users            []string         `json:"users" bson:"users"`
 	RegUserId        string           `json:"regUserId" bson:"regUserId"`
 	ModUserId        string           `json:"modUserId" bson:"modUserId"`
-	PaymentMethods   *[]PaymentMethod `json:"paymentMethods,omitempty" bson:"paymentMethods,omitempty"`
+	PaymentMethods   []*PaymentMethod `json:"paymentMethods,omitempty" bson:"paymentMethods,omitempty"`
 }
 
 type GroupAdd struct {
 	Name             string              `json:"name" bson:"name" binding:"required"`
 	Users            []string            `json:"users" bson:"users" binding:"required"`
 	RegUserId        string              `json:"regUserId" bson:"regUserId" binding:"required"`
-	PaymentMethodAdd *[]PaymentMethodAdd `json:"paymentMethodAdd,omitempty" bson:"paymentMethodAdd,omitempty"`
+	PaymentMethodAdd []*PaymentMethodAdd `json:"paymentMethodAdd,omitempty" bson:"paymentMethodAdd,omitempty"`
 }
 
 func (ga *GroupAdd) ToEntity() *Group {
