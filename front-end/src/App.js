@@ -2,7 +2,7 @@ import '@/App.scss';
 import '@/common/Common.scss';
 import MainApp from '@/pages/MainApp';
 import GroupList from '@/pages/GroupList';
-import GroupRegisterView from '@/pages/GroupRegisterView';
+import GroupRegister from '@/pages/GroupRegister';
 import Login from '@/pages/Login';
 import PaymentListView from '@/pages/PaymentListView';
 import PaymentRegisterView from '@/pages/PaymentRegisterView';
@@ -32,7 +32,7 @@ function App() {
         <Routes>
           <Route path="/" element={<MainApp />} >
             <Route path="groups" element={<GroupList userInfo={userInfo} />} />
-            <Route path="groups/register" element={<GroupRegisterView userInfo={userInfo} />} />
+            <Route path="groups/register" element={<GroupRegister userInfo={userInfo} />} />
             <Route path="payments" element={<PaymentListView />} />
             <Route path="payments/register" element={<PaymentRegisterView userInfo={userInfo} />} />
           </Route>

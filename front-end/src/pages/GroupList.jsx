@@ -65,9 +65,9 @@ export default function GroupList({ userInfo }) {
     <article className="abs-groups">
       {
         groups.map(group =>
-        <GroupItemView
-          group={group}
-          key={group.id}
+          <GroupItemView
+            group={group}
+            key={group.id}
           />)
       }
       <section className="group-creation">

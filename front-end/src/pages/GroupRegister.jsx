@@ -1,13 +1,51 @@
-import '@/pages/GroupRegisterView.scss';
+import '@/pages/GroupRegister.scss';
 import { Badge, Button, Col, Form, Row, Spinner } from 'react-bootstrap';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const BadgeBg = ['info', 'light'];
 const BadgeText = [undefined, 'dark'];
 
-export default function GroupRegisterView(props) {
+function BadgeItem({ index, name, handleRemove }) {
+  const bg = useMemo(() => BadgeBg[index % 2], [index]);
+  const text = useMemo(() => BadgeText[index % 2], [index]);
+
+  return (
+    <>
+      <Badge
+        size="sm"
+        bg={bg}
+        text={text}
+      >{name}</Badge>
+      <Button
+        size="xs"
+        variant="clear"
+        onClick={handleRemove}
+      >x</Button>
+    </>
+  );
+}
+
+function RegisteredList({ list, handleRemove }) {
+  return (
+    <ul>
+      {
+        list.map((item, i) => (
+          <li key={item}>
+            <BadgeItem
+              index={i}
+              name={item}
+              handleRemove={() => handleRemove(item)}
+            />
+          </li>
+        ))
+      }
+    </ul>
+  );
+}
+
+export default function GroupRegister({ userInfo }) {
   const navigate = useNavigate();
   const [processing, setProcessing] = useState(false);
   const [formData, setFormData] = useState({
@@ -111,24 +149,10 @@ export default function GroupRegisterView(props) {
               추가
             </Col>
           </Row>
-          <ul>
-            {
-              apiData.email.map((email, i) => (
-                <li key={email}>
-                  <Badge
-                    size="sm"
-                    bg={BadgeBg[i % 2]}
-                    text={BadgeText[i % 2]}
-                  >{email}</Badge>
-                  <Button
-                    size="xs"
-                    variant="clear"
-                    onClick={() => handleApiDataRemoved('email', email)}
-                  >x</Button>
-                </li>
-              ))
-            }
-          </ul>
+          <RegisteredList
+            list={apiData.email}
+            handleRemove={email => handleApiDataRemoved('email', email)}
+          />
         </Form.Group>
         <Form.Group className="register-row-group">
           <Form.Label>결제 수단 추가하기</Form.Label>
@@ -151,24 +175,10 @@ export default function GroupRegisterView(props) {
               추가
             </Col>
           </Row>
-          <ul>
-            {
-              apiData.paymentMethod.map((method, i) => (
-                <li key={method}>
-                  <Badge
-                    size="sm"
-                    bg={BadgeBg[i % 2]}
-                    text={BadgeText[i % 2]}
-                  >{method}</Badge>
-                  <Button
-                    size="xs"
-                    variant="clear"
-                    onClick={() => handleApiDataRemoved('paymentMethod', method)}
-                  >x</Button>
-                </li>
-              ))
-            }
-          </ul>
+          <RegisteredList
+            list={apiData.paymentMethod}
+            handleRemove={method => handleApiDataRemoved('paymentMethod', method)}
+          />
         </Form.Group>
         <Button
           className="w-100"
