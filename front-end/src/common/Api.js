@@ -12,7 +12,7 @@ export function useGetRequest(url, params) {
       try {
         setProcessing(true);
         const { data } = await axios.get(`${API_END_POINT}${url}`, { params });
-        setResponse(data);
+        setResponse(response => data || response);
       } finally {
         setProcessing(false);
       }
@@ -23,4 +23,8 @@ export function useGetRequest(url, params) {
   }, []);
 
   return [response, processing];
+}
+
+export function doPostRequest(url, params) {
+  return axios.post(`${API_END_POINT}${url}`, params);
 }

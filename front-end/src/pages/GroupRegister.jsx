@@ -1,31 +1,11 @@
 import '@/pages/GroupRegister.scss';
 import { Badge, Button, Col, Form, Row, Spinner } from 'react-bootstrap';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { doPostRequest } from '@/common/Api';
 
 const BadgeBg = ['info', 'light'];
 const BadgeText = [undefined, 'dark'];
-
-function BadgeItem({ index, name, handleRemove }) {
-  const bg = useMemo(() => BadgeBg[index % 2], [index]);
-  const text = useMemo(() => BadgeText[index % 2], [index]);
-
-  return (
-    <>
-      <Badge
-        size="sm"
-        bg={bg}
-        text={text}
-      >{name}</Badge>
-      <Button
-        size="xs"
-        variant="clear"
-        onClick={handleRemove}
-      >x</Button>
-    </>
-  );
-}
 
 function RegisteredList({ list, handleRemove }) {
   return (
@@ -33,15 +13,47 @@ function RegisteredList({ list, handleRemove }) {
       {
         list.map((item, i) => (
           <li key={item}>
-            <BadgeItem
-              index={i}
-              name={item}
-              handleRemove={() => handleRemove(item)}
-            />
+            <Badge
+              size="sm"
+              bg={BadgeBg[i % 2]}
+              text={BadgeText[i % 2]}
+            >{item}</Badge>
+            <Button
+              size="xs"
+              variant="clear"
+              onClick={() => handleRemove(item)}
+            >x</Button>
           </li>
         ))
       }
     </ul>
+  );
+}
+
+function RegisterFormRow({ input, handleFormDataChanged, handleApiDataAdded }) {
+  const { name, type, value, placeholder } = input;
+
+  return (
+    <Row className="register-row">
+      <Col
+        as={Form.Control}
+        name={name}
+        value={value}
+        type={type}
+        placeholder={placeholder}
+        onChange={handleFormDataChanged}
+      />
+      <Col
+        as={Button}
+        className="col-3"
+        variant="outline-primary"
+        // TODO 이 외의 disable 조건 적용
+        disabled={value.length === 0}
+        onClick={(item) => handleApiDataAdded(name, item)}
+      >
+        추가
+      </Col>
+    </Row>
   );
 }
 
@@ -93,13 +105,13 @@ export default function GroupRegister({ userInfo }) {
     evt.preventDefault();
     try {
       setProcessing(true);
-      await axios.post(`${process.env.REACT_APP_ABS}/v1/group`, {
+      await doPostRequest('/v1/group', {
         name: formData.name,
-        users: [props.userInfo.email].concat(apiData.email),
-        regUserId: props.userInfo.id,
-        PaymentMethodAdd: apiData.paymentMethod.map(method => ({
+        users: [userInfo.email].concat(apiData.email),
+        regUserId: userInfo.id,
+        paymentMethodAdd: apiData.paymentMethod.map((method, i) => ({
           name: method,
-          default: false
+          default: i === 0
         }))
       });
       setProcessing(false);
@@ -126,29 +138,18 @@ export default function GroupRegister({ userInfo }) {
             required
           />
         </Form.Group>
-        {/* 이 밑으로 두 개 form group 비슷한 코드 */}
         <Form.Group className="register-row-group">
           <Form.Label>그룹 구성원 추가하기</Form.Label>
-          <Row className="register-row">
-            <Col
-              as={Form.Control}
-              name="email"
-              value={formData.email}
-              type="email"
-              placeholder="초대할 이메일"
-              onChange={handleFormDataChanged}
-            />
-            <Col
-              as={Button}
-              className="col-3"
-              variant="outline-primary"
-              // TODO 이메일 형식에 맞지 않으면 disable
-              // TODO 이미 추가한 이메일이면 disable
-              onClick={() => handleApiDataAdded('email')}
-            >
-              추가
-            </Col>
-          </Row>
+          <RegisterFormRow
+            input={{
+              name: 'email',
+              type: 'email',
+              value: formData.email,
+              placeholder: '초대할 구성원 이메일',
+            }}
+            handleFormDataChanged={handleFormDataChanged}
+            handleApiDataAdded={handleApiDataAdded}
+          />
           <RegisteredList
             list={apiData.email}
             handleRemove={email => handleApiDataRemoved('email', email)}
@@ -156,25 +157,16 @@ export default function GroupRegister({ userInfo }) {
         </Form.Group>
         <Form.Group className="register-row-group">
           <Form.Label>결제 수단 추가하기</Form.Label>
-          <Row className="register-row">
-            <Col
-              as={Form.Control}
-              name="paymentMethod"
-              value={formData.paymentMethod}
-              type="text"
-              placeholder="결제 수단 이름"
-              onChange={handleFormDataChanged}
-            />
-            <Col
-              as={Button}
-              className="col-3"
-              variant="outline-primary"
-              // TODO 이미 추가한 결제 수단이면 disable
-              onClick={() => handleApiDataAdded('paymentMethod')}
-            >
-              추가
-            </Col>
-          </Row>
+          <RegisterFormRow
+            input={{
+              name: 'paymentMethod',
+              type: 'text',
+              value: formData.paymentMethod,
+              placeholder: '결제 수단 이름'
+            }}
+            handleFormDataChanged={handleFormDataChanged}
+            handleApiDataAdded={handleApiDataAdded}
+          />
           <RegisteredList
             list={apiData.paymentMethod}
             handleRemove={method => handleApiDataRemoved('paymentMethod', method)}
