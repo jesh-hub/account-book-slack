@@ -4,7 +4,7 @@ import MainApp from '@/pages/MainApp';
 import GroupList from '@/pages/GroupList';
 import GroupRegister from '@/pages/GroupRegister';
 import Login from '@/pages/Login';
-import PaymentListView from '@/pages/PaymentListView';
+import PaymentList from '@/pages/PaymentList';
 import PaymentRegisterView from '@/pages/PaymentRegisterView';
 import { useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
@@ -33,7 +33,7 @@ function App() {
           <Route path="/" element={<MainApp />} >
             <Route path="groups" element={<GroupList userInfo={userInfo} />} />
             <Route path="groups/register" element={<GroupRegister userInfo={userInfo} />} />
-            <Route path="payments" element={<PaymentListView />} />
+            <Route path="payments" element={<PaymentList />} />
             <Route path="payments/register" element={<PaymentRegisterView userInfo={userInfo} />} />
           </Route>
         </Routes>

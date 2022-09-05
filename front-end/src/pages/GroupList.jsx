@@ -59,7 +59,8 @@ function GroupItemView({ group }) {
 
 export default function GroupList({ userInfo }) {
   const navigate = useNavigate();
-  const [groups, processing] = useGetRequest('/v1/group', { email: userInfo.email });
+  const params = useMemo(() => ({ email: userInfo.email }), [userInfo]);
+  const [groups, processing] = useGetRequest('/v1/group', params);
 
   return (
     <article className="abs-groups">

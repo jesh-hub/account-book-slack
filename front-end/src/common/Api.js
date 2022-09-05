@@ -11,6 +11,7 @@ export function useGetRequest(url, params) {
     const fetch = async () => {
       try {
         setProcessing(true);
+        setResponse(_ => []);
         const { data } = await axios.get(`${API_END_POINT}${url}`, { params });
         setResponse(response => data || response);
       } finally {
@@ -19,8 +20,7 @@ export function useGetRequest(url, params) {
     };
 
     fetch().then();
-  // eslint-disable-next-line
-  }, []);
+  }, [url, params]);
 
   return [response, processing];
 }
