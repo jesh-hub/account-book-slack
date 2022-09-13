@@ -1,8 +1,9 @@
 import '@/pages/GroupRegister.scss';
-import { Badge, Button, Col, Form, Row, Spinner } from 'react-bootstrap';
+import { Badge, Button, Col, Form, Row } from 'react-bootstrap';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { doPostRequest } from '@/common/Api';
+import ProcessingSubmitButton from '@/common/ProcessingSubmitButton';
 
 const BadgeBg = ['info', 'light'];
 const BadgeText = [undefined, 'dark'];
@@ -131,7 +132,7 @@ export default function GroupRegister({ userInfo }) {
         <Form.Group className="register-row">
           <Form.Control
             name="name"
-            type="string"
+            type="text"
             value={formData.name}
             placeholder="그룹 이름"
             onChange={handleFormDataChanged}
@@ -172,13 +173,7 @@ export default function GroupRegister({ userInfo }) {
             handleRemove={method => handleApiDataRemoved('paymentMethod', method)}
           />
         </Form.Group>
-        <Button
-          className="w-100"
-          type="submit"
-          disabled={processing}
-        >
-          {processing ? <Spinner animation="border" variant="light" size="sm" /> : '등록'}
-        </Button>
+        <ProcessingSubmitButton processing={processing}>등록</ProcessingSubmitButton>
       </Form>
     </article>
   );

@@ -28,3 +28,8 @@ export function useGetRequest(url, params) {
 export function doPostRequest(url, params) {
   return axios.post(`${API_END_POINT}${url}`, params);
 }
+
+export function doPutRequest(url, params) {
+  console.log('doPutRequest', `${API_END_POINT}${url}`);
+  return axios.put(`${API_END_POINT}${url}`, params);
+}

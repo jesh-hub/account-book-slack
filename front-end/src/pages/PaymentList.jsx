@@ -79,6 +79,8 @@ function DailyPaymentList({ payments }) {
 
 export default function PaymentList() {
   const location = useLocation();
+  const { gid } = location.state;
+
   const [curDate, setCurDate] = useState(new Date());
   const [curYearDisplayed, curMonthDisplayed] = useMemo(() =>
     [`${curDate.getFullYear()}년`, `${curDate.getMonth() + 1}월`], [curDate]);
@@ -93,7 +95,7 @@ export default function PaymentList() {
       dateTo: getDateMonthStr(dateTo)
     };
   }, [curDate]);
-  const [payments, processing] = useGetRequest(`/v1/group/${location.state.gid}/payment`, dateParams);
+  const [payments, processing] = useGetRequest(`/v1/group/${gid}/payment`, dateParams);
 
   const handleChangeCurMonth = useCallback((month) => {
     setCurDate(curDate => {
