@@ -1,12 +1,10 @@
 import '@/pages/PaymentRegister.scss';
 import { Button, ButtonGroup, Col, Dropdown, DropdownButton, Form } from 'react-bootstrap';
-import { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import useRequest from '@/common/useRequest';
 import ProcessingSubmitButton from '@/common/ProcessingSubmitButton';
 import { getDateStr } from '@/common/DateUtil';
-import { doPostRequest, doPutRequest } from '@/common/Api';
+import { doPostRequest, doPutRequest, useGetRequest } from '@/common/Api';
 
 const PaymentTypes = [
   { key: 'income', uiText: '지출', value: -1 },
@@ -14,44 +12,42 @@ const PaymentTypes = [
 ];
 const DateParamSuffix = ':00+09:00';
 
-function PaymentTypeRadio({ type, setType }) {
+function PaymentTypeRadio({ selectedType, setPaymentType }) {
   return PaymentTypes.map(paymentType =>
     <Button
       variant="outline-primary"
       size="sm"
       key={paymentType.key}
-      active={type === paymentType}
-      onClick={() => setType(paymentType)}
+      active={selectedType === paymentType}
+      onClick={() => setPaymentType(paymentType)}
     >
       {paymentType.uiText}
     </Button>);
 }
 
-function DropdownPaymentMethods(props) {
-  const [isFirst, setIsFirst] = useState(true);
-  const [isWaitingPaymentMethods, paymentMethods] = useRequest(
-    `/v1/group/${props.gid}/paymentMethod`, null, [], []);
+function DropdownPaymentMethods({ gid, selectedMethod, setPaymentMethod, handleInitialize }) {
+  const [paymentMethods, processing] = useGetRequest(`/v1/group/${gid}/paymentMethod`);
+  const isFirst = useRef(true);
 
   useEffect(() => {
-    if (isFirst && ! isWaitingPaymentMethods)
-      setIsFirst(false);
-    else if (! isWaitingPaymentMethods)
-      props.onInit(paymentMethods);
-  // eslint-disable-next-line
-  }, [isWaitingPaymentMethods]);
+    if (isFirst.current && ! processing)
+      isFirst.current = false;
+    else if (! processing)
+      handleInitialize(paymentMethods);
+  }, [handleInitialize, paymentMethods, processing]);
 
   return (
     <DropdownButton
-      title={props.active?.name || '(선택)'}
-      disabled={isWaitingPaymentMethods}
+      title={selectedMethod?.name || '(선택)'}
+      disabled={processing}
       size="sm"
       variant="outline-primary"
     >
       {
-        paymentMethods.map((method, i) =>
+        paymentMethods.map(method =>
           <Dropdown.Item
-            key={i}
-            onClick={() => props.setActiveMethod(method)}
+            key={method.id}
+            onClick={() => setPaymentMethod(method)}
           >
             {method.name}
           </Dropdown.Item>)
@@ -156,7 +152,7 @@ export default function PaymentRegister({ userInfo }) {
     value,
   }), []);
 
-  const handleMethodInitialized = useCallback(methods => {
+  const handlePaymentMethodsInitialized = useCallback(methods => {
     if (prev === undefined)
       return;
     handleFormDataMethodChanged(
@@ -189,8 +185,8 @@ export default function PaymentRegister({ userInfo }) {
         <Form.Group className="register-row">
           <ButtonGroup>
             <PaymentTypeRadio
-              type={formData.paymentType}
-              setType={handleFormDataTypeChanged}
+              selectedType={formData.paymentType}
+              setPaymentType={handleFormDataTypeChanged}
             />
           </ButtonGroup>
           <Col>
@@ -207,10 +203,10 @@ export default function PaymentRegister({ userInfo }) {
         <Form.Group className="register-row">
           결제 수단/할부
           <DropdownPaymentMethods
-            gid={location.state.gid}
-            active={formData.paymentMethod}
-            setActiveMethod={handleFormDataMethodChanged}
-            onInit={handleMethodInitialized}
+            gid={gid}
+            selectedMethod={formData.paymentMethod}
+            setPaymentMethod={handleFormDataMethodChanged}
+            handleInitialize={handlePaymentMethodsInitialized}
           />
           <Col>
             <Form.Control

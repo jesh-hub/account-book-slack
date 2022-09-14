@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 
 const API_END_POINT = process.env.REACT_APP_ABS;
 
-export function useGetRequest(url, params) {
+export function useGetRequest(url, params = null) {
   const [processing, setProcessing] = useState(false);
   const [response, setResponse] = useState([]);
 
@@ -30,6 +30,5 @@ export function doPostRequest(url, params) {
 }
 
 export function doPutRequest(url, params) {
-  console.log('doPutRequest', `${API_END_POINT}${url}`);
   return axios.put(`${API_END_POINT}${url}`, params);
 }
