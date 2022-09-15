@@ -18,7 +18,7 @@ import React from 'react';
  * @property {KorStdTimeStr} updated_at
  */
 
-function SummaryBySign({ payments, className }) {
+function SummaryBySign({ payments, commonClassName }) {
   const [income, outgoing] = payments.reduce((acc, cur) => {
     if (cur.price > 0)
       acc[0] += cur.price;
@@ -29,10 +29,10 @@ function SummaryBySign({ payments, className }) {
 
   return (
     <>
-      <h6 className={className}>
+      <h6 className={commonClassName}>
         <b style={{'color': '#02d505'}}>수입: </b>{income.toLocaleString()}원
       </h6>
-      <h6 className={className}>
+      <h6 className={commonClassName}>
         <b style={{'color': '#fd2926'}}>지출: </b>{outgoing.toLocaleString()}원
       </h6>
     </>

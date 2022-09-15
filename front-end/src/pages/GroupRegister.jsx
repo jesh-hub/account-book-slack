@@ -1,9 +1,9 @@
 import '@/pages/GroupRegister.scss';
 import { Badge, Button, Col, Form, Row } from 'react-bootstrap';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { doPostRequest } from '@/common/Api';
-import ProcessingSubmitButton from '@/common/ProcessingSubmitButton';
+import ProcessingSubmitButton from '@/components/ProcessingSubmitButton';
 
 const BadgeBg = ['info', 'light'];
 const BadgeText = [undefined, 'dark'];
@@ -50,7 +50,7 @@ function RegisterFormRow({ input, handleFormDataChanged, handleApiDataAdded }) {
         variant="outline-primary"
         // TODO 이 외의 disable 조건 적용
         disabled={value.length === 0}
-        onClick={(item) => handleApiDataAdded(name, item)}
+        onClick={() => handleApiDataAdded(name)}
       >
         추가
       </Col>
@@ -71,15 +71,15 @@ export default function GroupRegister({ userInfo }) {
     paymentMethod: []
   });
 
-  function handleFormDataChanged(evt) {
+  const handleFormDataChanged = useCallback((evt) => {
     const { name, value } = evt.target;
     setFormData(formData => ({
       ...formData,
       [name]: value
     }));
-  }
+  }, []);
 
-  function handleApiDataAdded(name) {
+  const handleApiDataAdded = useCallback((name) => {
     if (apiData[name].includes(formData[name]))
       return;
     setApiData(apiData => ({
@@ -90,9 +90,9 @@ export default function GroupRegister({ userInfo }) {
       ...formData,
       [name]: '',
     }));
-  }
+  }, [apiData, formData]);
 
-  function handleApiDataRemoved(name, value) {
+  const handleApiDataRemoved = useCallback((name, value) => {
     const index = apiData[name].indexOf(value);
     if (index < 0)
       return;
@@ -100,7 +100,7 @@ export default function GroupRegister({ userInfo }) {
       ...apiData,
       [name]: apiData[name].filter(data => data !== value)
     }));
-  }
+  }, [apiData]);
 
   async function submit(evt) {
     evt.preventDefault();

@@ -10,11 +10,10 @@ import { useGetRequest } from '@/common/Api';
 import { getDateDateStr, getDateMonthStr } from '@/common/DateUtil';
 import useRouterNavigateWith from '@/common/useRouterNavigateWith';
 
-function MonthDropdownItems({ curMonth, setCurMonth }) {
-  const months = useMemo(() =>
-    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], []);
+const Months = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 
-  return months.map(month =>
+function MonthDropdownItems({ curMonth, setCurMonth }) {
+  return Months.map(month =>
     <Dropdown.Item
       key={month}
       disabled={curMonth === month}
@@ -43,38 +42,39 @@ function DailyPaymentList({ payments }) {
     return acc;
   }, []);
 
-  if (paymentsByDate.length === 0)
-    return <p><BsExclamationCircle />내역이 없어요.</p>;
-  return paymentsByDate.map(dailyPayments =>
-    <section
-      key={dailyPayments.id}
-      className="daily-payments"
-    >
-      <header>
-        <h5>{dailyPayments.dateDateStr}</h5>
-        <SummaryBySign payments={dailyPayments.items} />
-      </header>
-      <ul>
-        {
-          dailyPayments.items.map(item =>
-            <li key={item.id}>
-              <span className="li__title">{item.name}</span>
-              <span className="li__price">{item.price.toLocaleString()}원</span>
-              <Button
-                size="xs"
-                variant="soft-clear"
-                className="li__edit-btn"
-                onClick={() => {
-                  navigateWith('/payments/register', {
-                    gid: item.groupId,
-                    prev: item,
-                  });
-                }}
-              ><RiEdit2Line /></Button>
-            </li>)
-        }
-      </ul>
-    </section>);
+  return paymentsByDate.length === 0 ?
+    <p><BsExclamationCircle />내역이 없어요.</p> :
+    paymentsByDate.map(dailyPayments =>
+      <section
+        key={dailyPayments.id}
+        className="daily-payments"
+      >
+        <header>
+          <h5>{dailyPayments.dateDateStr}</h5>
+          <SummaryBySign payments={dailyPayments.items}/>
+        </header>
+        <ul>
+          {
+            dailyPayments.items.map(item =>
+              <li key={item.id}>
+                <span className="li__title">{item.name}</span>
+                <span className="li__price">{item.price.toLocaleString()}원</span>
+                <Button
+                  size="xs"
+                  variant="soft-clear"
+                  className="li__edit-btn"
+                  onClick={() => {
+                    navigateWith('/payments/register', {
+                      gid: item.groupId,
+                      prev: item,
+                    });
+                  }}
+                ><RiEdit2Line /></Button>
+              </li>)
+          }
+        </ul>
+      </section>
+    );
 }
 
 export default function PaymentList() {
@@ -131,7 +131,7 @@ export default function PaymentList() {
         <section className="summary">
           <SummaryBySign
             payments={payments}
-            className="bilateral-align"
+            commonClassName="bilateral-align"
           />
         </section>
       </header>

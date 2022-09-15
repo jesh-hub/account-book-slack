@@ -27,7 +27,7 @@ function GroupItemView({ group }) {
       <main className="group-item-main">
         <SummaryBySign
           payments={payments}
-          className="bilateral-align"
+          commonClassName="bilateral-align"
         />
         <ProcessingSpinner processing={processing} />
       </main>

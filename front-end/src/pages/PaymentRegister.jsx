@@ -2,9 +2,9 @@ import '@/pages/PaymentRegister.scss';
 import { Button, ButtonGroup, Col, Dropdown, DropdownButton, Form } from 'react-bootstrap';
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import ProcessingSubmitButton from '@/common/ProcessingSubmitButton';
 import { getDateStr } from '@/common/DateUtil';
 import { doPostRequest, doPutRequest, useGetRequest } from '@/common/Api';
+import ProcessingSubmitButton from '@/components/ProcessingSubmitButton';
 
 const PaymentTypes = [
   { key: 'income', uiText: '지출', value: -1 },
@@ -13,16 +13,22 @@ const PaymentTypes = [
 const DateParamSuffix = ':00+09:00';
 
 function PaymentTypeRadio({ selectedType, setPaymentType }) {
-  return PaymentTypes.map(paymentType =>
-    <Button
-      variant="outline-primary"
-      size="sm"
-      key={paymentType.key}
-      active={selectedType === paymentType}
-      onClick={() => setPaymentType(paymentType)}
-    >
-      {paymentType.uiText}
-    </Button>);
+  return (
+    <ButtonGroup>
+      {
+        PaymentTypes.map(paymentType =>
+          <Button
+            variant="outline-primary"
+            size="sm"
+            key={paymentType.key}
+            active={selectedType === paymentType}
+            onClick={() => setPaymentType(paymentType)}
+          >
+            {paymentType.uiText}
+          </Button>)
+      }
+    </ButtonGroup>
+  );
 }
 
 function DropdownPaymentMethods({ gid, selectedMethod, setPaymentMethod, handleInitialize }) {
@@ -183,12 +189,10 @@ export default function PaymentRegister({ userInfo }) {
           />
         </Form.Group>
         <Form.Group className="register-row">
-          <ButtonGroup>
-            <PaymentTypeRadio
-              selectedType={formData.paymentType}
-              setPaymentType={handleFormDataTypeChanged}
-            />
-          </ButtonGroup>
+          <PaymentTypeRadio
+            selectedType={formData.paymentType}
+            setPaymentType={handleFormDataTypeChanged}
+          />
           <Col>
               <Form.Control
                 name="price"
