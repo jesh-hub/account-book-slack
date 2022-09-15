@@ -97,7 +97,7 @@ export default function PaymentList() {
   }, [curDate]);
   const [payments, processing] = useGetRequest(`/v1/group/${gid}/payment`, dateParams);
 
-  const handleChangeCurMonth = useCallback((month) => {
+  const handleChangeCurMonth = useCallback(month => {
     setCurDate(curDate => {
       const date = new Date(curDate.getTime());
       date.setMonth(month);

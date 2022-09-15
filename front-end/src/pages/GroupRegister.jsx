@@ -71,7 +71,7 @@ export default function GroupRegister({ userInfo }) {
     paymentMethod: []
   });
 
-  const handleFormDataChanged = useCallback((evt) => {
+  const handleFormDataChanged = useCallback(evt => {
     const { name, value } = evt.target;
     setFormData(formData => ({
       ...formData,
@@ -79,7 +79,7 @@ export default function GroupRegister({ userInfo }) {
     }));
   }, []);
 
-  const handleApiDataAdded = useCallback((name) => {
+  const handleApiDataAdded = useCallback(name => {
     if (apiData[name].includes(formData[name]))
       return;
     setApiData(apiData => ({
