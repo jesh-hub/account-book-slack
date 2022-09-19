@@ -5,9 +5,8 @@ import { RiGroup2Fill } from 'react-icons/ri';
 import { useCallback, useState } from 'react';
 
 export default function MainApp() {
-
   const [navBarHeight, setNavBarClient] = useState(0);
-  const navBar = useCallback(node => {
+  const onRefChange = useCallback(node => {
     if (node !== null)
       setNavBarClient(node.getBoundingClientRect().height);
   }, []);
@@ -23,7 +22,7 @@ export default function MainApp() {
         variant="light"
         fixed="bottom"
         bg="light"
-        ref={navBar}
+        ref={onRefChange}
       >
         <Container>
           <Nav className="main-nav">

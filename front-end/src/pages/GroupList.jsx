@@ -1,37 +1,35 @@
-import '@/pages/GroupListView.scss';
+import '@/pages/GroupList.scss';
 import { Button } from 'react-bootstrap';
-import useRequest from '@/common/useRequest';
 import useRouterNavigateWith from '@/common/useRouterNavigateWith';
 import ProcessingSpinner from '@/common/ProcessingSpinner';
 import SummaryBySign from '@/components/SummaryBySign';
 import { useNavigate } from 'react-router-dom';
-
-function _buildDateRange() {
-  const today = new Date();
-  return {
-    dateFrom: `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`,
-    dateTo: `${today.getFullYear()}-${String(today.getMonth() + 2).padStart(2, '0')}`
-  }
-}
+import { useGetRequest } from '@/common/Api.js';
+import { useMemo } from 'react';
+import { getDateMonthStr } from '@/common/DateUtil';
 
 function GroupItemView({ group }) {
   const navigateWith = useRouterNavigateWith();
-  const [_processing, payments] = useRequest(
-    `/v1/group/${group.id}/payment`,
-    _buildDateRange(), [], []);
+  const dateParams = useMemo(() => {
+    const dateFrom = new Date(),
+      dateTo = new Date();
+    dateTo.setMonth(dateTo.getMonth() + 1);
+    return {
+      dateFrom: getDateMonthStr(dateFrom),
+      dateTo: getDateMonthStr(dateTo)
+    };
+  }, []);
+  const [payments, processing] = useGetRequest(`/v1/group/${group.id}/payment`, dateParams);
 
   return (
-    <section
-      className="group-item"
-      key={group.id}
-    >
+    <section className="group-item">
       <h5>{group.name}</h5>
       <main className="group-item-main">
         <SummaryBySign
           payments={payments}
-          className="bilateral-align"
+          commonClassName="bilateral-align"
         />
-        <ProcessingSpinner processing={_processing} />
+        <ProcessingSpinner processing={processing} />
       </main>
       <footer className="group-item-footer">
         <Button
@@ -59,18 +57,20 @@ function GroupItemView({ group }) {
   );
 }
 
-export default function GroupListView(props) {
+export default function GroupList({ userInfo }) {
   const navigate = useNavigate();
-  const [_processing, groups] = useRequest(
-    '/v1/group', { email: props.userInfo.email }, [], []);
+  const params = useMemo(() => ({ email: userInfo.email }), [userInfo]);
+  const [groups, processing] = useGetRequest('/v1/group', params);
 
   return (
-    <article className="abs-group">
-      {groups.map(group =>
-        <GroupItemView
-          group={group}
-          key={group.id}
-        />)}
+    <article className="abs-groups">
+      {
+        groups.map(group =>
+          <GroupItemView
+            group={group}
+            key={group.id}
+          />)
+      }
       <section className="group-creation">
         <Button
           className="w-100"
@@ -81,7 +81,7 @@ export default function GroupListView(props) {
           }}
         >새 그룹 만들기</Button>
       </section>
-      <ProcessingSpinner processing={_processing} />
+      <ProcessingSpinner processing={processing} />
     </article>
   );
 }

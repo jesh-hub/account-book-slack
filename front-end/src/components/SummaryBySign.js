@@ -1,3 +1,5 @@
+import React from 'react';
+
 /** @typedef {string} KorStdTimeStr - 2022-07-10T14:39:33.959Z */
 /**
  * @typedef {Object} Payment
@@ -16,8 +18,8 @@
  * @property {KorStdTimeStr} updated_at
  */
 
-function SummaryBySign(props) {
-  const [income, outgoing] = props.payments.reduce((acc, cur) => {
+function SummaryBySign({ payments, commonClassName }) {
+  const [income, outgoing] = payments.reduce((acc, cur) => {
     if (cur.price > 0)
       acc[0] += cur.price;
     else
@@ -27,10 +29,14 @@ function SummaryBySign(props) {
 
   return (
     <>
-      <h6 className={props.className}><b style={{'color': '#02d505'}}>수입: </b>{income.toLocaleString()}원</h6>
-      <h6 className={props.className}><b style={{'color': '#fd2926'}}>지출: </b>{outgoing.toLocaleString()}원</h6>
+      <h6 className={commonClassName}>
+        <b style={{'color': '#02d505'}}>수입: </b>{income.toLocaleString()}원
+      </h6>
+      <h6 className={commonClassName}>
+        <b style={{'color': '#fd2926'}}>지출: </b>{outgoing.toLocaleString()}원
+      </h6>
     </>
   );
 }
 
-export default SummaryBySign;
+export default React.memo(SummaryBySign);

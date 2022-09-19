@@ -1,11 +1,11 @@
 import '@/App.scss';
 import '@/common/Common.scss';
 import MainApp from '@/pages/MainApp';
-import GroupListView from '@/pages/GroupListView';
-import GroupRegisterView from '@/pages/GroupRegisterView';
+import GroupList from '@/pages/GroupList';
+import GroupRegister from '@/pages/GroupRegister';
 import Login from '@/pages/Login';
-import PaymentListView from '@/pages/PaymentListView';
-import PaymentRegisterView from '@/pages/PaymentRegisterView';
+import PaymentList from '@/pages/PaymentList';
+import PaymentRegister from '@/pages/PaymentRegister';
 import { useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
@@ -31,10 +31,10 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<MainApp />} >
-            <Route path="groups" element={<GroupListView userInfo={userInfo} />} />
-            <Route path="groups/register" element={<GroupRegisterView userInfo={userInfo} />} />
-            <Route path="payments" element={<PaymentListView />} />
-            <Route path="payments/register" element={<PaymentRegisterView userInfo={userInfo} />} />
+            <Route path="groups" element={<GroupList userInfo={userInfo} />} />
+            <Route path="groups/register" element={<GroupRegister userInfo={userInfo} />} />
+            <Route path="payments" element={<PaymentList />} />
+            <Route path="payments/register" element={<PaymentRegister userInfo={userInfo} />} />
           </Route>
         </Routes>
       </BrowserRouter>
