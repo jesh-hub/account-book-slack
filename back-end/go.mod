@@ -6,9 +6,11 @@ require (
 	github.com/aws/aws-lambda-go v1.34.1
 	github.com/awslabs/aws-lambda-go-api-proxy v0.13.3
 	github.com/gin-gonic/gin v1.8.1
+	github.com/go-playground/assert/v2 v2.0.1
 	github.com/golang-jwt/jwt/v4 v4.4.2
 	github.com/joho/godotenv v1.4.0
 	github.com/kamva/mgm/v3 v3.4.1
+	github.com/kr/pretty v0.3.0
 	github.com/labstack/gommon v0.3.1
 	github.com/swaggo/files v0.0.0-20220728132757-551d4a08d97a
 	github.com/swaggo/gin-swagger v1.5.2
@@ -60,7 +62,9 @@ require (
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/kr/text v0.2.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/rogpeppe/go-internal v1.8.0 // indirect
 	github.com/stretchr/testify v1.8.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
