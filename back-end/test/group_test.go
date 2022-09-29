@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/kr/pretty"
 	"github.com/stretchr/testify/assert"
-	"math/rand"
 	"testing"
 )
 
@@ -40,12 +39,4 @@ func TestAddPaymentMethod(t *testing.T) {
 
 	err = service.DeletePaymentMethodMany(groupId)
 	assert.Equal(t, err, nil)
-}
-
-func TestRandomPayment(t *testing.T) {
-	min := 5000
-	max := 100000
-	for i := 0; i < 20; i++ {
-		fmt.Println((rand.Intn(max-min+1) + min) / 100 * 100)
-	}
 }
