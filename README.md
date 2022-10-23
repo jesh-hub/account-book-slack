@@ -7,13 +7,6 @@
 
 <img src="https://img.shields.io/badge/React-FFFFFF?style=for-the-badge&logo=React"><img src="https://img.shields.io/badge/Go-FFFFFF?style=for-the-badge&logo=Go"><img src="https://img.shields.io/badge/Mongo-FFFFFF?style=for-the-badge&logo=MongoDB"><img src="https://img.shields.io/badge/aws-FFFFFF?style=for-the-badge&logo=amazonaws&logoColor=FF9900"><img src="https://img.shields.io/badge/github_actions-FFFFFF?style=for-the-badge&logo=githubactions">
 
-## Service Domain
-
-[https://abs.wejesh.com](https://abs.wejesh.com/)
-
-## API Reference
-
-[https://abs-api-dev.wejesh.com/swagger/index.html](https://abs-api-dev.wejesh.com/swagger/index.html)
 
 ## Code Quality
 
